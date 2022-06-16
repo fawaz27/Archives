@@ -4,7 +4,7 @@ import  express, {Application} from 'express';
 import  bodyParser from "body-parser";
 import  morgan from "morgan";
 import cookieParser from 'cookie-parser'
-
+import errorMiddleware from './middlewares/errorMiddleware';
 
 
 class App {
@@ -14,6 +14,7 @@ class App {
     this.app= express();
     this.initializeMiddlewares();
     this.initializeControllers(controllers);
+    this.initializeErrorHandling();
     
   }
 
@@ -47,12 +48,22 @@ class App {
     }
 
     
-
-    private initializeControllers(controllers:any)
+    private initializeErrorHandling()
     {
-        controllers.forEach((controller:any) => {
+      this.app.use(errorMiddleware);
+        
+    }
+
+    
+
+    private initializeControllers(controllers: any[])
+    {
+      
+        controllers.forEach((controller ) => {
+          //console.log(controller.getRouter())
             this.app.use('/',controller.router);
         });
+      console.log("ssdsddgfgjjj")
     }
 
 }

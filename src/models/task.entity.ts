@@ -1,5 +1,5 @@
 import { Column ,Entity, PrimaryGeneratedColumn, ManyToOne} from 'typeorm'
-import { Seance } from './seance';
+import { Seance } from './seance.entity';
 
 @Entity()
 export class Task{

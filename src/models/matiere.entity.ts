@@ -1,7 +1,7 @@
 import { Column ,Entity, PrimaryGeneratedColumn ,ManyToOne,OneToMany} from 'typeorm'
-import { Enseignant } from './enseignant';
-import { Seance } from './seance';
-import { Classe } from './classe';
+import { Enseignant } from './enseignant.entity';
+import { Seance } from './seance.entity';
+import { Classe } from './classe.entity';
 
 @Entity()
 export class Matiere{
@@ -17,10 +17,9 @@ export class Matiere{
     @OneToMany( ()=> Seance, (Seance: Seance) => Seance.matiere)
     matieres_seance: Matiere[];
 
-    @OneToMany( ()=> Classe, (classe: Classe) => classe.matiere)
-    matieres_classe: Matiere[];
 
-
+    @ManyToOne( ()=> Classe, (classe : Classe) => classe.classes_matiere)
+    public classe:Classe;
 
 
 }

@@ -1,13 +1,12 @@
-import { Column ,Entity,OneToMany ,ManyToMany, JoinTable} from 'typeorm'
-import {User} from './user';
-import { Classe } from './classe';
-import {Matiere} from './matiere'
+import {Entity,OneToMany ,ManyToMany, JoinTable,Column} from 'typeorm'
+import {User} from './user.entity';
+import { Classe } from './classe.entity';
+import {Matiere} from './matiere.entity'
 
 @Entity()
 export class Enseignant extends User {  
-    @Column()
-    public phone: string;
-   
+    
+  
     @OneToMany( ()=> Matiere, (matiere: Matiere) => matiere.enseignant)
     enseignants: Enseignant[];
 
@@ -15,6 +14,9 @@ export class Enseignant extends User {
     @JoinTable()
     classes:Classe[]
 
-    
-
 }
+
+
+
+
+
