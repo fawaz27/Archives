@@ -1,54 +1,60 @@
 import { AppDataSource } from '../database/AppDataSource';
-import { Repository,getRepository } from 'typeorm';
-import { Enseignant } from '../models/enseignant.entity';
-import CreateEnseignantDto from '../dto/enseignant.dto';
+import { Teacher } from '../models/teacher.entity'
+import CreateTeacherDto from '../dto/teacher.dto';
 import   bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import UserWithThatEmailAlreadyExistsException from '../exceptions/UserWithThatEmailAlreadyExistsException';
+import UserWithThatEmailAlreadyExistsException from '../exceptions/teacher/UserWithThatEmailAlreadyExistsException';
 import WrongCredentialsException from '../exceptions/WrongCredentialsException';
 import TokenData from '../interfaces/tokenData.interface';
 import DataStoredInToken from '../interfaces/dataStoredInToken.interface';
+import InternalErrorException from '../exceptions/InternalErrorException';
 
 export class AuthentificationService{
 
-    public enseignantRepository;
+    public teacherRepository;
     
     constructor(){
         
-        this.enseignantRepository=AppDataSource.getRepository(Enseignant);
+        this.teacherRepository=AppDataSource.getRepository(Teacher);
         
     }
 
 
-    public async Register (enseignant:CreateEnseignantDto){
+    public async Register (teacher:CreateTeacherDto){
         
         
-        const result = await this.enseignantRepository.findOne( {where:{email:enseignant.email}}  );
+        const result = await this.teacherRepository.findOne( {where:{email:teacher.email}}  );
         //console.log(result);
 
         if (result) {
-            throw new UserWithThatEmailAlreadyExistsException(enseignant.email);
+            throw new UserWithThatEmailAlreadyExistsException(teacher.email);
 
         } else {
 
-            const hashedPassword = await bcrypt.hash(enseignant.hashPassword, 10);
+            const hashedPassword = await bcrypt.hash(teacher.hashPassword, 10);
 
-            enseignant.hashPassword=hashedPassword;
+            teacher.hashPassword=hashedPassword;
             
-            const newEnseignant = this.enseignantRepository.create(enseignant);
-            const created = await this.enseignantRepository.save(newEnseignant); 
+            const newTeacher = this.teacherRepository.create(teacher);
+            const created = await this.teacherRepository.save(newTeacher); 
 
             console.log(created);
+            if (created) {
+                const tokenData = this.createToken(created);
+                const cookie = this.createCookie(tokenData);
+                return {cookie,created};
+            }
+            else{
+                throw new InternalErrorException();
+            }
 
-            const tokenData = this.createToken(created);
-            const cookie = this.createCookie(tokenData);
-            return {cookie,created};
+            
     
         }
     }
 
     public async LogIn(email:string,password:string){
-        const result = await this.enseignantRepository.findOne(({where:{email:`${email}`}}));
+        const result = await this.teacherRepository.findOne(({where:{email:`${email}`}}));
         console.log(result);
         if (result) {
             const isPassword = await bcrypt.compare(password,result.hashPassword);
@@ -75,9 +81,9 @@ export class AuthentificationService{
         return 'Authorization=;Max-age=0';
     }
 
-    public createToken(user: Enseignant)
+    public createToken(user: Teacher)
     {
-        const expiresIn = 60 * 60;
+        const expiresIn = 3600;
         const secret =  process.env.JWT_KEY;
         const dataStoredInToken:DataStoredInToken= {
             _id: String(user.id) ,

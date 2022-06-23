@@ -1,5 +1,5 @@
 import { Column ,Entity, PrimaryGeneratedColumn, ManyToOne} from 'typeorm'
-import { Seance } from './seance.entity';
+import { Session } from './session.entity';
 
 @Entity()
 export class Task{
@@ -7,22 +7,22 @@ export class Task{
     public id: number;
 
     @Column()
-    public nom: string;
+    public name: string;
 
     @Column()
-    public titre: string;
+    public title: string;
 
     @Column()
-    public date_donne: Date;
+    public date_given: Date;
 
     @Column()
-    public date_soumission: Date;
+    public date_submission: Date;
 
     @Column()
-    public enonce: string;
+    public statement: string;
 
     @Column()
-    public document_annexe: string;
+    public document_annex: string;
 
     @Column()
     public type: string;
@@ -30,8 +30,8 @@ export class Task{
     @Column()
     public createdAt: string;
 
-    @ManyToOne( ()=> Seance, (seance : Seance) => seance.seances_task)
-    public seance: Seance;
+    @ManyToOne( ()=> Session, (session : Session) => session.tasks)
+    public session: Session;
 
 
 

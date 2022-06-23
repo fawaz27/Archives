@@ -1,12 +1,12 @@
 import "reflect-metadata" 
 import { DataSource } from "typeorm"
 
-import { Annee_academique } from '../models/annee_academique.entity';
-import { Cahier_texte } from '../models/cahier_texte.entity';
-import { Classe } from '../models/classe.entity';
-import { Enseignant } from '../models/enseignant.entity';
-import { Matiere } from '../models/matiere.entity';
-import { Seance } from '../models/seance.entity';
+import { Year_Academic } from '../models/year_academic.entity'
+import { Textbook } from '../models/textbook.entity';
+import { Class } from '../models/class.entity';
+import { Teacher } from '../models/teacher.entity'
+import { Subject } from '../models/subject.entity';
+import { Session } from '../models/session.entity';
 import { Task } from '../models/task.entity';
 
 export const AppDataSource = new DataSource({
@@ -17,13 +17,13 @@ export const AppDataSource = new DataSource({
     password: process.env.PASSWORD_DB,
     database: process.env.NAME_DB,
     entities: [
-     Enseignant,
-     Matiere,
-     Seance,
-     Classe,
-     Cahier_texte,
+     Teacher,
+     Subject,
+     Session,
+     Class,
+     Textbook,
      Task,
-     Annee_academique
+     Year_Academic
     ],
     synchronize: true,
 });

@@ -63,7 +63,7 @@ class App {
           //console.log(controller.getRouter())
             this.app.use('/',controller.router);
         });
-      console.log("ssdsddgfgjjj")
+     
     }
 
 }

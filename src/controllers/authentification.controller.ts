@@ -1,6 +1,6 @@
 import express from 'express';
 import { AuthentificationService } from '../services/authentification.service';
-import CreateEnseignantDto from '../dto/enseignant.dto';
+import CreateTeacherDto from '../dto/teacher.dto';
 import validationMiddleware from '../middlewares/validationMiddleware';
 import logInDto from '../dto/login.dto';
 
@@ -20,7 +20,7 @@ export class AuthentificationController{
     
     private initializeRoutes()
     {
-        this.router.post(`${this.path}/register`,validationMiddleware(CreateEnseignantDto), this.registration);
+        this.router.post(`${this.path}/register`,validationMiddleware(CreateTeacherDto), this.registration);
         this.router.post(`${this.path}/login`,validationMiddleware(logInDto), this.logIn);
         this.router.post(`${this.path}/logout`, this.logOut)
         
@@ -28,10 +28,10 @@ export class AuthentificationController{
 
     public  registration = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
 
-        const EnseignantData:CreateEnseignantDto =request.body;
-        //console.log(EnseignantData);
+        const TeacherData:CreateTeacherDto =request.body;
+        //console.log(TeacherData);
         try {
-            const {cookie,created}= await this.authService.Register(EnseignantData);
+            const {cookie,created}= await this.authService.Register(TeacherData);
             response.setHeader('Set-Cookie', [cookie]);
             response.send(created);
 

@@ -3,7 +3,7 @@ import express from 'express';
 import {  getRepository } from 'typeorm';
 import {User} from '../models/user.entity';
 import authMiddleware from '../middlewares/authMiddleware';
-import CreateEnseignantDto from '../dto/enseignant.dto';
+import CreateEnseignantDto from '../dto/teacher.dto';
 import CreateUserDto from '../dto/user.dto';
 import validationMiddleware from '../middlewares/validationMiddleware';
 

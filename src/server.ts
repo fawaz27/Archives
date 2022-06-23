@@ -3,8 +3,8 @@ import 'reflect-metadata';
 import App from './app';
 import { AppDataSource } from './database/AppDataSource';
 import { AuthentificationController } from './controllers/authentification.controller';
-
-
+import {TeacherController} from './controllers/teacher.controller'
+import {ClassController} from './controllers/class.controller'
 
 
 (async () => {
@@ -18,7 +18,11 @@ import { AuthentificationController } from './controllers/authentification.contr
       console.log('Error while connecting to the database', error);
       return error;
     }
-    const app = new App([new AuthentificationController()]);
+    const app = new App([
+      new AuthentificationController(),
+      new TeacherController(),
+      new ClassController()
+    ]);
     
     
     app.listen();

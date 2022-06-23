@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { Enseignant } from '../models/enseignant.entity';
+import { Enseignant } from '../models/teacher.entity
 
 
 interface RequestWithUser extends Request {
