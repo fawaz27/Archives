@@ -4,8 +4,9 @@ import { Textbook } from '../models/textbook.entity';
 import { Year_Academic } from '../models/year_academic.entity'
 import CreateClassDto from '../dto/class.dto';
 import InternalErrorException from '../exceptions/InternalErrorException';
-import NoClassFoundException from '../exceptions/classe/NoClassFoundException';
-import ClassWithThatIDNotExistsException from '../exceptions/classe/UserWithThatIDNotExistsException';
+import NoClassFoundException from '../exceptions/class/NoClassFoundException';
+import ClassWithThatIDNotExistsException from '../exceptions/class/ClassWithThatIDNotExistsException';
+import ClassWithThatNameAndYearAlreadyExistsException from '../exceptions/class/ClassWithThatNameAndYearAlreadyExistsException';
 
 export class ClassService {
 
@@ -34,64 +35,77 @@ export class ClassService {
 
     
     public async CreateClass(classe:CreateClassDto){
+        
+        
+        const isAlreadyExist =  await this.classRepository
+                .createQueryBuilder("class")
+                .leftJoinAndSelect("class.year_academic","year_academic")
+                .where("class.name = :name ",{name:classe.name})
+                .andWhere("year_academic.year = :year",{year:classe.yearAcademic})
+                .getOne()
+   
+        if (isAlreadyExist) {
+                throw new ClassWithThatNameAndYearAlreadyExistsException(classe.name,classe.yearAcademic);
+            
+        } 
+        else{
+
+            const year = await this.yearRepository.findOne({where:{year:`${classe.yearAcademic}`}});
+
+            if (year) {
+
+                const newTextbook = new Textbook();
+                newTextbook.title="Textbook - "+classe.name;
+                const result = await this.textbookRepository.save(newTextbook);
 
 
-        const year = await this.yearRepository.findOne({where:{year:`${classe.yearAcademic}`}})
+                const newClass =   new Class() ;
+                newClass.name=classe.name;
+                newClass.year_academic=year;
+                newClass.textbook=newTextbook;
+                const created = await this.classRepository.save(newClass);
 
-        if (year) {
-
-            const newTextbook = new Textbook();
-            newTextbook.title="Textbook - "+classe.name;
-            const result = await this.textbookRepository.save(newTextbook);
-
-
-            const newClass =   new Class() ;
-            newClass.name=classe.name;
-            newClass.year_academic=year;
-            newClass.textbook=newTextbook;
-            const created = await this.classRepository.save(newClass);
-
-            console.log(created);
-            if (created) {
-                return created;
+                console.log(created);
+                if (created) {
+                    return created;
+                    
+                } else {
+                    throw new InternalErrorException();
+                    
+                }
                 
+
             } else {
-                throw new InternalErrorException();
+
+
+
+                const newAnnee= new Year_Academic();
+                newAnnee.year=classe.yearAcademic;
+                const created1= await this.yearRepository.save(newAnnee);
+
+                const newTextbook = new Textbook();
+                newTextbook.title="Textbook - "+classe.name;
+                const result = await this.textbookRepository.save(newTextbook);
+
+                
+                const newClass =   new Class() ;
+                newClass.name=classe.name;
+                newClass.year_academic=newAnnee;
+                newClass.textbook=newTextbook;
+                const created2 = await this.classRepository.save(newClass);
+                console.log(created2);
+                if (created2) {
+                    return created2;
+
+                } else {
+                    throw new InternalErrorException();
+                    
+                } 
+                    
+                    
                 
             }
-            
-
-        } else {
-
-
-
-            const newAnnee= new Year_Academic();
-            newAnnee.year=classe.yearAcademic;
-            const created1= await this.yearRepository.save(newAnnee);
-
-            const newTextbook = new Textbook();
-            newTextbook.title="Textbook - "+classe.name;
-            const result = await this.textbookRepository.save(newTextbook);
-
-            
-            const newClass =   new Class() ;
-            newClass.name=classe.name;
-            newClass.year_academic=newAnnee;
-            newClass.textbook=newTextbook;
-            const created2 = await this.classRepository.save(newClass);
-            console.log(created2);
-            if (created2) {
-                return created2;
-
-            } else {
-                throw new InternalErrorException();
-                
-            } 
-                
-                
-            
-        }
-        
+        }  
 
         
     }

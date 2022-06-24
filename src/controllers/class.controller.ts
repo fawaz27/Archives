@@ -21,13 +21,14 @@ export class ClassController{
     private initializeRoutes()
     {
         this.router
-            // .all(`${this.path}`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
-            // .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
+            .all(`${this.path}`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
+            .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .get(this.path,this.GetAllClasses)
             .post(this.path,validationMiddleware(CreateClasseDto),this.CreateClass);
 
         this.router
-            // .all(`${this.path}/*`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
+            .all(`${this.path}/*`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
+            .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .get(`${this.path}/:id`,this.GetClassById)
             .patch(`${this.path}/:id`,validationMiddleware(CreateClasseDto,true),this.UpdateClass)
             .delete(`${this.path}/:id`,this.DeleteClass)

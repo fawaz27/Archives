@@ -5,7 +5,7 @@ import { AppDataSource } from './database/AppDataSource';
 import { AuthentificationController } from './controllers/authentification.controller';
 import {TeacherController} from './controllers/teacher.controller'
 import {ClassController} from './controllers/class.controller'
-
+import {SubjectController} from './controllers/subject.controller'
 
 (async () => {
 
@@ -21,7 +21,8 @@ import {ClassController} from './controllers/class.controller'
     const app = new App([
       new AuthentificationController(),
       new TeacherController(),
-      new ClassController()
+      new ClassController(),
+      new SubjectController()
     ]);
     
     

@@ -10,8 +10,9 @@ import AuthenticationTokenMissingException from '../exceptions/AuthenticationTok
 async function authMiddleware(request: RequestWithUser, response: Response, next: NextFunction)
 {
    //console.log(request);
+   //request.cookies={};
     const cookies =request.cookies;
-   // console.log(cookies);
+    console.log(cookies);
     
     if (cookies && cookies.Authorization) {
         const secret = process.env.JWT_KEY;
@@ -32,6 +33,8 @@ async function authMiddleware(request: RequestWithUser, response: Response, next
 
             
         } catch (error) {
+            console.log('test');
+            
             next(new WrongAuthenticationTokenException());
         }
         
