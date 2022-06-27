@@ -7,9 +7,9 @@ import SubjectWithThatIDNotExistsException from '../exceptions/subject/SubjectWi
 import SubjectWithThatNameAlreadyExistsException from '../exceptions/subject/SubjectWithThatNameAlreadyExistsException';
 import NoSubjectFoundException from '../exceptions/subject/NoSubjectFoundException';
 import InternalErrorException from '../exceptions/InternalErrorException';
-import { IsNull } from 'typeorm';
 import TeacherWithThatIDNotExistsException from '../exceptions/subject/TeacherWithThatIDNotExistsException';
 import ClassWithThatIDNotExistsException from '../exceptions/subject/ClassWithThatIDNotExistsException';
+import TeacherWithIdAlreadyExistInClassException from '../exceptions/subject/TeacherWithIdAlreadyExistInClassException';
 
 
 export class SubjectService{
@@ -55,16 +55,26 @@ export class SubjectService{
 
     public async CreateSubject(id_class:number,subject:CreateSubjectDto){
 
-        const isAlreadyExist =  await this.subjectRepository
+        const isAlreadyExist1 =  await this.subjectRepository
                 .createQueryBuilder("subject")
                 .leftJoinAndSelect("subject.classe","class")
                 .where("subject.name = :name",{name:subject.name})
                 .andWhere("class.id = :id",{id:id_class})
                 .getOne();
-        if (isAlreadyExist) {
-            throw new SubjectWithThatNameAlreadyExistsException(subject.name,isAlreadyExist.classe.name);
-            
-        } else {
+        // const isAlreadyExist2 =  await this.subjectRepository
+        //         .createQueryBuilder("subject")
+        //         .leftJoinAndSelect("subject.teacher","teacher")
+        //         .leftJoinAndSelect("subject.classe","class")
+        //         .where("teacher.id = :id",{id:subject.id_teacher})
+        //         .andWhere("class.id = :id",{id:id_class})
+        //         .getOne();
+        if (isAlreadyExist1) {
+            throw new SubjectWithThatNameAlreadyExistsException(subject.name,isAlreadyExist1.classe.name);
+        }  
+        // else if (subject.id_teacher && isAlreadyExist2) {
+        //     throw new TeacherWithIdAlreadyExistInClassException(subject.id_teacher,isAlreadyExist2.classe.name)
+        // }
+        else {
             
             const classe =await this.classRepository.findOneBy({id:id_class});
 
@@ -80,6 +90,9 @@ export class SubjectService{
                             newSubject.classe=classe;
                             newSubject.teacher=teacher;
                             const created = await this.subjectRepository.save(newSubject);
+                            
+                            teacher.classes=[classe];
+                            const result = await this.teacherRepository.save(teacher);
 
                             console.log(created);
                             if (created) {
@@ -160,6 +173,14 @@ export class SubjectService{
         const classe =await this.classRepository.findOneBy({id:id_class});
 
         if (classe) {
+
+            const isAlreadyExist1 =  await this.subjectRepository
+                .createQueryBuilder("subject")
+                .leftJoinAndSelect("subject.classe","class")
+                .where("subject.name = :name",{name:subject.name})
+                .andWhere("class.id = :id",{id:id_class})
+                .getOne();
+               
             const subjectUpdate= await this.subjectRepository 
                 .createQueryBuilder("subject")
                 .leftJoinAndSelect("subject.classe","class")
@@ -167,16 +188,59 @@ export class SubjectService{
                 .where("subject.id = :id_subject",{id_subject:id_subject})
                 .andWhere("class.id = :id_class",{id_class:id_class})
                 .getOne();
+            if (isAlreadyExist1 && isAlreadyExist1.id!=subjectUpdate?.id) {
+                throw new SubjectWithThatNameAlreadyExistsException(subject.name,isAlreadyExist1.classe.name);
+            } 
             
             if (subjectUpdate) {
                 if (subject.id_teacher!=null && typeof(subject.id_teacher)==='number') {
                     const teacher = await this.teacherRepository.findOneBy({id:subject.id_teacher});
                     
                     if (teacher) {
+
+                        if (subjectUpdate.teacher) {
+                    
+                            let del_teacher= await this.teacherRepository
+                                    .createQueryBuilder("teacher")
+                                    .leftJoinAndSelect("teacher.classes","classe")
+                                    .where("teacher.id= :id_teacher",{id_teacher:subjectUpdate.teacher.id})
+                                    .getOne()
+
+                            if (del_teacher ) {
+                                const teacherisAnothersubject = await this.subjectRepository
+                                            .createQueryBuilder("subject")
+                                            .leftJoinAndSelect("subject.teacher","teacher")
+                                            .where("teacher.id = :id_teacher",{id_teacher:del_teacher.id})
+                                            .getMany()
+                                if (teacherisAnothersubject.length==1) {
+                                    del_teacher.classes=del_teacher.classes.filter(cl=>{return cl.id!= classe.id});                    
+                                
+                                    const result1 = await this.teacherRepository.save(del_teacher);
+                                    console.log(result1)
+                                }
+
+
+                                
+                                
+                            }
+                            
+                        }
                         subjectUpdate.name=subject.name;
                         subjectUpdate.teacher=teacher;
                         const result = await this.subjectRepository.save(subjectUpdate);
-
+                        
+                        let sav_teacher_class= await this.teacherRepository
+                                .createQueryBuilder("teacher")
+                                .leftJoinAndSelect("teacher.classes","classe")
+                                .where("teacher.id= :id_teacher",{id_teacher:teacher.id})
+                                .getOne()
+                        if (sav_teacher_class) {
+                            sav_teacher_class.classes.push(classe);
+                            const result2 = await this.teacherRepository.save(sav_teacher_class);
+                            console.log(result2);
+                            
+                        }
+        
                         if (result) {
                             return result;
                         } else {

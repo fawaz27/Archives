@@ -10,7 +10,7 @@ export class Teacher extends User {
     @OneToMany( ()=> Subject, (subject: Subject) => subject.teacher)
     subjects: Subject[];
 
-    @ManyToMany(()=>Class)
+    @ManyToMany(()=>Class, classe => classe.teachers)
     @JoinTable()
     classes:Class[]
 
