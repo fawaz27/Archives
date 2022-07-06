@@ -1,5 +1,6 @@
 import { Column ,Entity, PrimaryGeneratedColumn,OneToMany  } from 'typeorm'
 import { Class } from './class.entity';
+import { Textbook } from './textbook.entity';
 
 @Entity()
 export class Year_Academic{
@@ -9,6 +10,6 @@ export class Year_Academic{
     @Column()
     year: string;
 
-    @OneToMany( ()=> Class, (classe: Class) => classe.year_academic)
-    classes: Class[];
+    @OneToMany( ()=> Textbook, (textbook: Textbook) => textbook.year_academic)
+    textbooks: Textbook[];
 }

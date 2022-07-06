@@ -6,10 +6,6 @@ class CreateClassDto{
     @IsString()
     public name: string;
 
-    @IsNotEmpty({message: ' please the year academic is required'})
-    @IsString()
-    public yearAcademic:string;
-
 }
 
 export default CreateClassDto;

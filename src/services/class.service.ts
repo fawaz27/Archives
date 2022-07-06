@@ -1,7 +1,5 @@
 import { AppDataSource } from '../database/AppDataSource';
 import { Class } from '../models/class.entity';
-import { Textbook } from '../models/textbook.entity';
-import { Year_Academic } from '../models/year_academic.entity'
 import CreateClassDto from '../dto/class.dto';
 import InternalErrorException from '../exceptions/InternalErrorException';
 import NoClassFoundException from '../exceptions/class/NoClassFoundException';
@@ -11,21 +9,18 @@ import ClassWithThatNameAndYearAlreadyExistsException from '../exceptions/class/
 export class ClassService {
 
     public classRepository;
-    public textbookRepository;
-    public yearRepository;
+    
 
     constructor(){
         
         this.classRepository=AppDataSource.getRepository(Class);
-        this.textbookRepository=AppDataSource.getRepository(Textbook);
-        this.yearRepository=AppDataSource.getRepository(Year_Academic);
         
     }
 
     public async GetAllClasses(){
 
 
-        const classes = await this.classRepository.find({relations:["year_academic","textbook"]});
+        const classes = await this.classRepository.find();
         if (classes && JSON.stringify(classes)!='[]') {
             return classes;
         } else {
@@ -39,63 +34,20 @@ export class ClassService {
         
         const isAlreadyExist =  await this.classRepository
                 .createQueryBuilder("class")
-                .leftJoinAndSelect("class.year_academic","year_academic")
                 .where("class.name = :name ",{name:classe.name})
-                .andWhere("year_academic.year = :year",{year:classe.yearAcademic})
                 .getOne()
    
         if (isAlreadyExist) {
-                throw new ClassWithThatNameAndYearAlreadyExistsException(classe.name,classe.yearAcademic);
+                throw new ClassWithThatNameAndYearAlreadyExistsException(classe.name);
             
         } 
         else{
-
-            const year = await this.yearRepository.findOne({where:{year:`${classe.yearAcademic}`}});
-
-            if (year) {
-
-                const newTextbook = new Textbook();
-                newTextbook.title="Textbook - "+classe.name;
-                const result = await this.textbookRepository.save(newTextbook);
-
-
                 const newClass =   new Class() ;
                 newClass.name=classe.name;
-                newClass.year_academic=year;
-                newClass.textbook=newTextbook;
                 const created = await this.classRepository.save(newClass);
-
                 console.log(created);
                 if (created) {
                     return created;
-                    
-                } else {
-                    throw new InternalErrorException();
-                    
-                }
-                
-
-            } else {
-
-
-
-                const newAnnee= new Year_Academic();
-                newAnnee.year=classe.yearAcademic;
-                const created1= await this.yearRepository.save(newAnnee);
-
-                const newTextbook = new Textbook();
-                newTextbook.title="Textbook - "+classe.name;
-                const result = await this.textbookRepository.save(newTextbook);
-
-                
-                const newClass =   new Class() ;
-                newClass.name=classe.name;
-                newClass.year_academic=newAnnee;
-                newClass.textbook=newTextbook;
-                const created2 = await this.classRepository.save(newClass);
-                console.log(created2);
-                if (created2) {
-                    return created2;
 
                 } else {
                     throw new InternalErrorException();
@@ -104,7 +56,7 @@ export class ClassService {
                     
                     
                 
-            }
+            
         }  
 
         
@@ -112,9 +64,7 @@ export class ClassService {
 
 
     public async GetClasseById(id:number){
-        const classe = await this.classRepository.findOne({
-            where:{id:id},relations:["year_academic","textbook"]
-        });
+        const classe = await this.classRepository.findOneBy({id:id});
 
         if (classe) {
             return classe;
@@ -126,39 +76,19 @@ export class ClassService {
 
 
     public async UpdateClasse(classe:CreateClassDto,id:number){
-        const classeUpdate = await this.classRepository.findOne({
-            where:{id:id},relations:["year_academic","textbook"]
-        });
+        const classeUpdate = await this.classRepository.findOneBy({id:id});
 
         if (classeUpdate) {
 
-            const year = await this.yearRepository.findOne({where:{year:`${classe.yearAcademic}`}});
-
-            if (year) {
                 classeUpdate.name=classe.name;
-                classeUpdate.year_academic=year;
-                const result = await this.classRepository.save(classeUpdate);
-                if (result) {
-                    return result;
-                } else {
-                    throw new InternalErrorException();      
-                }
-            } else {
-                const newAnnee= new Year_Academic();
-                newAnnee.year=classe.yearAcademic;
-                const created1= await this.yearRepository.save(newAnnee);
-
-                classeUpdate.name=classe.name;
-                classeUpdate.year_academic=newAnnee;
-                const result = await this.classRepository.save(classeUpdate);
-                if (result) {
-                    return result;
-                } else {
-                    throw new InternalErrorException();      
-                }
-
                 
-            }              
+                const result = await this.classRepository.save(classeUpdate);
+                if (result) {
+                    return result;
+                } else {
+                    throw new InternalErrorException();      
+                }       
+                     
             
         } else {
              throw  new ClassWithThatIDNotExistsException(id);

@@ -12,6 +12,7 @@ export class SubjectController{
     public path = '/classes/:id_class/subjects'
     public router =express.Router();
     public subjectService:SubjectService;
+    
 
     constructor(){      
         this.subjectService = new SubjectService();
@@ -30,7 +31,7 @@ export class SubjectController{
             .all(`${this.path}/*`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .get(`${this.path}/:id_subject`,this.GetSubjectById)
-            .patch(`${this.path}/:id_subject`,validationMiddleware(CreateSubjectDto,true),this.UpdateSubject)
+            .put(`${this.path}/:id_subject`,validationMiddleware(CreateSubjectDto),this.UpdateSubject)
             .delete(`${this.path}/:id_subject`,this.DeleteSubject)
 
 

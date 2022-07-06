@@ -1,10 +1,12 @@
-import {IsString} from 'class-validator'
+import {IsString,IsNotEmpty} from 'class-validator'
 
-class CreateCahierDto{
+class CreateTextbookDto{
 
     @IsString()
-    public title: string;
+    @IsNotEmpty({message: ' please the yearAcademic is required'})
+    public yearAcademic: string;
+
 
 }
 
-export default CreateCahierDto;
+export default CreateTextbookDto;

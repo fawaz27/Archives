@@ -13,10 +13,10 @@ export class Task{
     public title: string;
 
     @Column()
-    public date_given: Date;
+    public date_given: string;
 
     @Column()
-    public date_submission: Date;
+    public date_submission: string;
 
     @Column()
     public statement: string;

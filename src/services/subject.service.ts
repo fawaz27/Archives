@@ -5,11 +5,11 @@ import { Teacher } from '../models/teacher.entity';
 import CreateSubjectDto from '../dto/subject.dto';
 import SubjectWithThatIDNotExistsException from '../exceptions/subject/SubjectWithThatIDNotExistsException';
 import SubjectWithThatNameAlreadyExistsException from '../exceptions/subject/SubjectWithThatNameAlreadyExistsException';
-import NoSubjectFoundException from '../exceptions/subject/NoSubjectFoundException';
+import NoSubjectForClassFoundException from '../exceptions/subject/NoSubjectForClassFoundException';
 import InternalErrorException from '../exceptions/InternalErrorException';
-import TeacherWithThatIDNotExistsException from '../exceptions/subject/TeacherWithThatIDNotExistsException';
-import ClassWithThatIDNotExistsException from '../exceptions/subject/ClassWithThatIDNotExistsException';
-import TeacherWithIdAlreadyExistInClassException from '../exceptions/subject/TeacherWithIdAlreadyExistInClassException';
+import TeacherWithThatIDNotExistsException from '../exceptions/teacher/TeacherWithThatIDNotExistsException';
+import ClassWithThatIDNotExistsException from '../exceptions/class/ClassWithThatIDNotExistsException';
+import SubjectWithThatIDNotExistsInClassException from '../exceptions/subject/SubjectWithThatIDNotExistsInClassException';
 
 
 export class SubjectService{
@@ -36,13 +36,13 @@ export class SubjectService{
                 .createQueryBuilder("subject")
                 .leftJoinAndSelect("subject.classe","class")
                 .leftJoinAndSelect("subject.teacher","teacher")
-                .where("class.id = :id_class",{id_class:id_class})
+                .where("class.id = :id_class",{id_class:classe.id})
                 .getMany();
         
             if (subjects && JSON.stringify(subjects)!='[]') {
                 return subjects;
             } else {
-                throw new NoSubjectFoundException();
+                throw new NoSubjectForClassFoundException(classe.name);
             }
         } else {
             throw new ClassWithThatIDNotExistsException(id_class);
@@ -55,30 +55,21 @@ export class SubjectService{
 
     public async CreateSubject(id_class:number,subject:CreateSubjectDto){
 
-        const isAlreadyExist1 =  await this.subjectRepository
-                .createQueryBuilder("subject")
-                .leftJoinAndSelect("subject.classe","class")
-                .where("subject.name = :name",{name:subject.name})
-                .andWhere("class.id = :id",{id:id_class})
-                .getOne();
-        // const isAlreadyExist2 =  await this.subjectRepository
-        //         .createQueryBuilder("subject")
-        //         .leftJoinAndSelect("subject.teacher","teacher")
-        //         .leftJoinAndSelect("subject.classe","class")
-        //         .where("teacher.id = :id",{id:subject.id_teacher})
-        //         .andWhere("class.id = :id",{id:id_class})
-        //         .getOne();
-        if (isAlreadyExist1) {
-            throw new SubjectWithThatNameAlreadyExistsException(subject.name,isAlreadyExist1.classe.name);
-        }  
-        // else if (subject.id_teacher && isAlreadyExist2) {
-        //     throw new TeacherWithIdAlreadyExistInClassException(subject.id_teacher,isAlreadyExist2.classe.name)
-        // }
-        else {
             
             const classe =await this.classRepository.findOneBy({id:id_class});
 
             if (classe) {
+
+                const isAlreadyExist1 =  await this.subjectRepository
+                        .createQueryBuilder("subject")
+                        .leftJoinAndSelect("subject.classe","class")
+                        .where("subject.name = :name",{name:subject.name})
+                        .andWhere("class.id = :id",{id:classe.id})
+                        .getOne();
+        
+                if (isAlreadyExist1) {
+                    throw new SubjectWithThatNameAlreadyExistsException(subject.name,isAlreadyExist1.classe.name);
+                }  
 
                 if (subject.id_teacher!=null && typeof(subject.id_teacher)==='number') {
                     const teacher = await this.teacherRepository.findOneBy({id:subject.id_teacher});
@@ -121,20 +112,12 @@ export class SubjectService{
                     }
 
                 }
-
-                
-
-                const newSubject = new Subject();
-                newSubject.name=subject.name;
-                newSubject
+               
                 
             } 
             else {
                 throw new ClassWithThatIDNotExistsException(id_class);
             }
-
-
-        }
     
             
 
@@ -151,13 +134,13 @@ export class SubjectService{
                 .leftJoinAndSelect("subject.classe","class")
                 .leftJoinAndSelect("subject.teacher","teacher")
                 .where("subject.id = :id_subject",{id_subject:id_subject})
-                .andWhere("class.id = :id_class",{id_class:id_class})
+                .andWhere("class.id = :id_class",{id_class:classe.id})
                 .getOne();
         
             if (subject) {
                 return subject;
             } else {
-                throw new SubjectWithThatIDNotExistsException(id_subject);
+                throw new SubjectWithThatIDNotExistsInClassException(id_subject,classe.name);
             }
         } else {
             throw new ClassWithThatIDNotExistsException(id_class);
@@ -175,19 +158,19 @@ export class SubjectService{
         if (classe) {
 
             const isAlreadyExist1 =  await this.subjectRepository
-                .createQueryBuilder("subject")
-                .leftJoinAndSelect("subject.classe","class")
-                .where("subject.name = :name",{name:subject.name})
-                .andWhere("class.id = :id",{id:id_class})
-                .getOne();
+                    .createQueryBuilder("subject")
+                    .leftJoinAndSelect("subject.classe","class")
+                    .where("subject.name = :name",{name:subject.name})
+                    .andWhere("class.id = :id",{id:classe.id})
+                    .getOne();
                
             const subjectUpdate= await this.subjectRepository 
-                .createQueryBuilder("subject")
-                .leftJoinAndSelect("subject.classe","class")
-                .leftJoinAndSelect("subject.teacher","teacher")
-                .where("subject.id = :id_subject",{id_subject:id_subject})
-                .andWhere("class.id = :id_class",{id_class:id_class})
-                .getOne();
+                    .createQueryBuilder("subject")
+                    .leftJoinAndSelect("subject.classe","class")
+                    .leftJoinAndSelect("subject.teacher","teacher")
+                    .where("subject.id = :id_subject",{id_subject:id_subject})
+                    .andWhere("class.id = :id_class",{id_class:classe.id})
+                    .getOne();
             if (isAlreadyExist1 && isAlreadyExist1.id!=subjectUpdate?.id) {
                 throw new SubjectWithThatNameAlreadyExistsException(subject.name,isAlreadyExist1.classe.name);
             } 
@@ -237,7 +220,7 @@ export class SubjectService{
                         if (sav_teacher_class) {
                             sav_teacher_class.classes.push(classe);
                             const result2 = await this.teacherRepository.save(sav_teacher_class);
-                            console.log(result2);
+                          
                             
                         }
         
@@ -265,7 +248,7 @@ export class SubjectService{
 
 
             } else {
-                throw new SubjectWithThatIDNotExistsException(id_subject);
+                throw new SubjectWithThatIDNotExistsInClassException(id_subject,classe.name);
             }
             
         }
@@ -287,7 +270,7 @@ export class SubjectService{
                 .createQueryBuilder("subject")
                 .leftJoinAndSelect("subject.classe","class")
                 .where("subject.id = :id_subject",{id_subject:id_subject})
-                .andWhere("class.id = :id_class",{id_class:id_class})
+                .andWhere("class.id = :id_class",{id_class:classe.id})
                 .getOne();
         
             if (subject) {

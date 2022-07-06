@@ -1,8 +1,8 @@
 import { Request } from 'express';
-import { Enseignant } from '../models/teacher.entity
+import { Teacher } from '../models/teacher.entity'
 
 
 interface RequestWithUser extends Request {
-    user:Enseignant;
+    user:Teacher;
 }
 export default RequestWithUser;

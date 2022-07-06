@@ -10,7 +10,7 @@ export class Session{
     public id: number;
 
     @Column()
-    public date: Date;
+    public date: string;
 
     @Column()
     public title: string;
@@ -27,7 +27,7 @@ export class Session{
     @Column()
     public duration: string;
 
-    @ManyToOne( ()=> Subject, (subject : Subject) => subject.sessions)
+    @ManyToOne( ()=> Subject, (subject : Subject) => subject.sessions) 
     public subject: Subject;
 
     @OneToMany( ()=> Task, (task: Task) => task.session)

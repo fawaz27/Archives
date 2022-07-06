@@ -6,6 +6,10 @@ import { AuthentificationController } from './controllers/authentification.contr
 import {TeacherController} from './controllers/teacher.controller'
 import {ClassController} from './controllers/class.controller'
 import {SubjectController} from './controllers/subject.controller'
+import { TextbookController } from './controllers/textbook.controller';
+import { YearController } from './controllers/year.controller';
+import { SessionController } from './controllers/session.controller';
+import { TaskController } from './controllers/task.controller';
 
 (async () => {
 
@@ -18,11 +22,16 @@ import {SubjectController} from './controllers/subject.controller'
       console.log('Error while connecting to the database', error);
       return error;
     }
+    
     const app = new App([
       new AuthentificationController(),
       new TeacherController(),
       new ClassController(),
-      new SubjectController()
+      new SubjectController(),
+      new TextbookController(),
+      new YearController(),
+      new SessionController(),
+      new TaskController()
     ]);
     
     

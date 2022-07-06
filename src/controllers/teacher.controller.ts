@@ -28,7 +28,7 @@ export class TeacherController{
             .all(`${this.path}/*`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .get(`${this.path}/:id`,this.GetTeacherById)
-            .patch(`${this.path}/:id`,validationMiddleware(CreateTeacherDto,true),this.UpdateTeacher)
+            .put(`${this.path}/:id`,validationMiddleware(CreateTeacherDto),this.UpdateTeacher)
             .delete(`${this.path}/:id`,this.DropTeacher)
 
 

@@ -4,8 +4,8 @@ class CreateSessionDto{
 
 
     @IsNotEmpty({message: ' please the date is required'})
-    @IsDate()
-    public date: Date;
+    @IsString()
+    public date: string;
 
     @IsNotEmpty({message: ' please the title is required'})
     @IsString()
