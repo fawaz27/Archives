@@ -30,7 +30,7 @@ export class SessionService{
         
     }
 
-    public async GetAllSessionsSubject(id_class:number,id_textbook:number,id_subject:number){
+    public async getAllSessionsSubject(id_class:number,id_textbook:number,id_subject:number){
 
         const classe = await this.classRepository.findOneBy({id:id_class}); 
 
@@ -61,10 +61,11 @@ export class SessionService{
                             .andWhere("textbook.id = :id_textbook",{id_textbook:textbook.id})
                             .getMany();
 
-                    if (sessions && JSON.stringify(sessions)!='[]') {
+                    if (sessions && sessions.length!=0) {
                         return sessions;
                     
-                    } else {
+                    } 
+                    else {
                        
                         throw new NoSessionFoundForSubjectException(subject.name,classe.name);
 
@@ -73,15 +74,18 @@ export class SessionService{
 
 
                     
-                } else {
+                } 
+                else {
                     throw new SubjectWithThatIDNotExistsInClassException(id_subject,classe.name);
                 }
                 
-            } else {
+            } 
+            else {
                 throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
             }
             
-        } else {
+        } 
+        else {
             throw new ClassWithThatIDNotExistsException(id_class);
         }
 
@@ -91,7 +95,7 @@ export class SessionService{
         
     }
 
-    public async GetAllSessions(id_class:number,id_textbook:number){
+    public async getAllSessions(id_class:number,id_textbook:number){
 
 
         const classe = await this.classRepository.findOneBy({id:id_class}); 
@@ -115,28 +119,31 @@ export class SessionService{
                         .where("textbook.id = :id_textbook",{id_textbook:textbook.id})
                         .getMany();
 
-                if (sessions && JSON.stringify(sessions)!='[]') {
+                if (sessions && sessions.length!=0) {
                     return sessions;
                 
-                } else {
+                } 
+                else {
                     
                     throw new NoSessionFoundInTextbookException(textbook.title,classe.name);
 
                     
                 }
                 
-            } else {
+            } 
+            else {
                 throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
             }
             
-        } else {
+        } 
+        else {
             throw new ClassWithThatIDNotExistsException(id_class);
         }
 
     }
 
 
-    public async CreateSession(id_class:number,id_textbook:number,id_subject:number,session:CreateSessionDto){
+    public async createSession(id_class:number,id_textbook:number,id_subject:number,session:CreateSessionDto){
 
         const classe = await this.classRepository.findOneBy({id:id_class}); 
 
@@ -174,19 +181,23 @@ export class SessionService{
                     if (created) {
                         return created;
                         
-                    } else {
+                    } 
+                    else {
                         throw new InternalErrorException();
                     }
 
-                } else {
+                } 
+                else {
                     throw new SubjectWithThatIDNotExistsInClassException(id_subject,classe.name);
                 }
                 
-            } else {
+            } 
+            else {
                 throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
             }
             
-        } else {
+        } 
+        else {
             throw new ClassWithThatIDNotExistsException(id_class);
         }
 
@@ -194,7 +205,7 @@ export class SessionService{
 
     }
 
-    public async GetSessionById(id_class:number,id_textbook:number,id_session:number){
+    public async getSessionById(id_class:number,id_textbook:number,id_session:number){
 
         const classe = await this.classRepository.findOneBy({id:id_class}); 
 
@@ -220,17 +231,20 @@ export class SessionService{
 
                 if (session) {
                     return session;
-                } else {
+                } 
+                else {
                     throw new SessionWithThatIDNotExistsInTextbookException(id_session,textbook.title);
                 }
 
                 
 
-            } else {
+            } 
+            else {
                 throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
             }
                 
-        } else {
+        } 
+        else {
             throw new ClassWithThatIDNotExistsException(id_class);
         }
 
@@ -238,7 +252,7 @@ export class SessionService{
     }
 
 
-    public async UpdateSession(id_class:number,id_textbook:number,id_session:number,session:CreateSessionDto){
+    public async updateSession(id_class:number,id_textbook:number,id_session:number,session:CreateSessionDto){
     
 
               
@@ -277,21 +291,25 @@ export class SessionService{
 
                     if (result) {
                         return result;
-                    } else {
+                    } 
+                    else {
                         throw new InternalErrorException();
                     }
                     
 
-                } else {
+                } 
+                else {
                     throw new SessionWithThatIDNotExistsInTextbookException(id_session,textbook.title);
                 }
 
 
-            } else {
+            } 
+            else {
                 throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
             }
                 
-        } else {
+        } 
+        else {
             throw new ClassWithThatIDNotExistsException(id_class);
         }
 
@@ -299,7 +317,7 @@ export class SessionService{
 
 
 
-    public async DeleteSession(id_class:number,id_textbook:number,id_session:number){
+    public async deleteSession(id_class:number,id_textbook:number,id_session:number){
 
 
         const classe = await this.classRepository.findOneBy({id:id_class}); 
@@ -329,17 +347,20 @@ export class SessionService{
                     const result = await this.sessionRepository.delete(id_session);
                     return id_session;
 
-                } else {
+                } 
+                else {
                     throw new SessionWithThatIDNotExistsInTextbookException(id_session,textbook.title);
                 }
 
                     
 
-            } else {
+            } 
+            else {
                 throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
             }
                         
-        } else {
+        } 
+        else {
             throw new ClassWithThatIDNotExistsException(id_class);
         }
 

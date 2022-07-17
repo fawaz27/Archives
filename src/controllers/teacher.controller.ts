@@ -21,37 +21,37 @@ export class TeacherController{
         this.router
             .all(`${this.path}`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
-            .get(this.path,this.GetAllTeachers)
-            .post(this.path,validationMiddleware(CreateTeacherDto),this.CreateTeacher);
+            .get(this.path,this.getAllTeachers)
+            .post(this.path,validationMiddleware(CreateTeacherDto),this.createTeacher);
 
         this.router
             .all(`${this.path}/*`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .get(`${this.path}/:id`,this.GetTeacherById)
-            .put(`${this.path}/:id`,validationMiddleware(CreateTeacherDto),this.UpdateTeacher)
-            .delete(`${this.path}/:id`,this.DropTeacher)
+            .put(`${this.path}/:id`,validationMiddleware(CreateTeacherDto),this.updateTeacher)
+            .delete(`${this.path}/:id`,this.dropTeacher)
 
 
         
         
     }
 
-    public GetAllTeachers = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
+    public getAllTeachers = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
       
         try {
-            const result = await this.teacherService.GetAllUsers();
-            response.send(result);
+            const result = await this.teacherService.getAllTeachers();
+            response.status(200).send(result);
         } catch (error) {
             next(error);
         }
     }
-    public CreateTeacher = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    public createTeacher = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const TeacherData:CreateTeacherDto =request.body;
 
         try {
             
-            const created= await this.teacherService.CreateUser(TeacherData);
-            response.send(created);
+            const created= await this.teacherService.createTeacher(TeacherData);
+            response.status(201).send(created);
         } catch (error) {
 
             next(error);            
@@ -62,8 +62,8 @@ export class TeacherController{
 
         const id = request.params.id;
         try {
-            const user = await this.teacherService.GetUserById(Number(id));
-            response.send(user);
+            const user = await this.teacherService.GetTeacherById(Number(id));
+            response.status(200).send(user);
         } catch (error) {
             next(error);
         }
@@ -74,33 +74,33 @@ export class TeacherController{
 
         const email = request.params.email;
         try {
-            const user = await this.teacherService.GetUserByEmail(email);
-            response.send(user);
+            const user = await this.teacherService.getTeacherByEmail(email);
+            response.status(200).send(user);
         } catch (error) {
             next(error);
         }
 
     }
 
-    public UpdateTeacher = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
+    public updateTeacher = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
     
         const id = request.params.id;
         const TeacherData:CreateTeacherDto = request.body;
 
         try {
            const result = await this.teacherService.UpdateUser(TeacherData,Number(id));
-           response.send(result);        
+           response.status(200).send(result);        
         } catch (error) {
             next(error);
         }
     }
 
-    public DropTeacher = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
+    public dropTeacher = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
 
         const id = request.params.id;
         try {
-            const result = await this.teacherService.DropUser(Number(id)) ;
-            response.send(`Users with id ${id} has been deleted`)
+            const result = await this.teacherService.dropTeacher(Number(id)) ;
+            response.status(200).send(`Users with id ${id} has been deleted`)
             
         } catch (error) {
             next(error);

@@ -1,13 +1,13 @@
 import  jwt from 'jsonwebtoken';
 import {NextFunction, Response ,Request} from 'express';
 import DataStoredInToken from '../interfaces/dataStoredInToken.interface'
-import RequestWithUser from '../interfaces/requestWithUser.interface';
+import RequestWithTeacher from '../interfaces/requestWithUser.interface';
 import { AppDataSource } from '../database/AppDataSource'
 import { Teacher } from '../models/teacher.entity'
 import WrongAuthenticationTokenException from '../exceptions/WrongAuthenticationTokenException';
 import AuthenticationTokenMissingException from '../exceptions/AuthenticationTokenMissingException';
 
-async function authMiddleware(request: RequestWithUser, response: Response, next: NextFunction)
+async function authMiddleware(request: RequestWithTeacher, response: Response, next: NextFunction)
 {
    //console.log(request);
    //request.cookies={};

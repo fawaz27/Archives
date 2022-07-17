@@ -19,14 +19,17 @@ export class TeacherService{
         
     }
 
-    public async CreateUser(teacher:CreateTeacherDto){
+    public async createTeacher(teacher:CreateTeacherDto){
         const result = await this.teacherRepository.findOne( {where:{email:teacher.email}}  );
         //console.log(result);
+
+        
 
         if (result) {
             throw new UserWithThatEmailAlreadyExistsException(teacher.email);
 
-        } else {
+        } 
+        else {
 
             const hashedPassword = await bcrypt.hash(teacher.hashPassword, 10);
 
@@ -47,12 +50,13 @@ export class TeacherService{
 
     }
 
-    public async GetAllUsers(){
+    public async getAllTeachers(){
         const users = await this.teacherRepository.find();
         
-        if (users && JSON.stringify(users)!='[]')  {
+        if (users && users.length!=0)  {
             return users;
-        } else {
+        } 
+        else {
             throw  new NoUserFoundException();
             
         }
@@ -60,11 +64,12 @@ export class TeacherService{
     }
 
 
-    public async GetUserByEmail(email:string){
+    public async getTeacherByEmail(email:string){
         const user = await this.teacherRepository.findOneBy({email:`${email}`});
         if (user) {
             return user;
-        } else {
+        } 
+        else {
             throw new UserWithThatEmailNotExistsException(email);
         }
 
@@ -72,12 +77,13 @@ export class TeacherService{
 
 
 
-    public async GetUserById(id:number){
+    public async GetTeacherById(id:number){
         const user = await this.teacherRepository.findOneBy({id:id});
         console.log(user);
         if (user) {
             return user;
-        } else {
+        } 
+        else {
             throw new UserWithThatIDNotExistsException(id);
         }
 
@@ -103,7 +109,7 @@ export class TeacherService{
 
 
 
-    public async DropUser (id:number){
+    public async dropTeacher (id:number){
         const result = await this.teacherRepository.findOneBy({id:id});
 
         if (result) {

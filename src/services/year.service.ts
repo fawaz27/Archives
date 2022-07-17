@@ -21,11 +21,11 @@ export class YearService {
         
     }
 
-    public async GetAllYears(){
+    public async getAllYears(){
 
 
         const years = await this.yearRepository.find();
-        if (years && JSON.stringify(years)!='[]') {
+        if (years && years.length!=0) {
             return years;
         } else {
             throw new NoYearFoundException();
@@ -33,7 +33,7 @@ export class YearService {
     }
 
 
-    public async CreateYear(year:CreateYearDto){
+    public async createYear(year:CreateYearDto){
         
         
         const isAlreadyExist =  await this.yearRepository
@@ -56,7 +56,8 @@ export class YearService {
                 if (created) {
                     return created;
 
-                } else {
+                } 
+                else {
                     throw new InternalErrorException();
                     
                 } 
@@ -70,30 +71,32 @@ export class YearService {
     }
 
 
-    public async GetYearById(id:number){
+    public async getYearById(id:number){
         const year = await this.yearRepository.findOne({  where:{id:id}});
 
         if (year) {
             return year;
-        } else {
+        } 
+        else {
             throw  new YearWithThatIDNotExistsException(id);
         }
         
     }
 
-    public async GetYearByName(name:string){
+    public async getYearByName(name:string){
         const year = await this.yearRepository.findOne({  where:{year:`${name}`}});
 
         if (year) {
             return year;
-        } else {
+        } 
+        else {
             throw  new YearWithThatNameNotExistsException(name);
         }
         
     }
 
 
-    public async UpdateYear(year:CreateYearDto,id:number){
+    public async updateYear(year:CreateYearDto,id:number){
         const yearUpdate = await this.yearRepository.findOne({where:{id:id}});
 
         if (yearUpdate) {
@@ -113,7 +116,8 @@ export class YearService {
                     const result = await this.yearRepository.save(yearUpdate);
                     if (result) {
                         return result;
-                    } else {
+                    } 
+                    else {
                         throw new InternalErrorException();      
                     }   
             }       
@@ -128,7 +132,7 @@ export class YearService {
     }
 
 
-    public async DeleteYear(id:number){
+    public async deleteYear(id:number){
         const year = await this.yearRepository.findOneBy({id:id});
         if (year) {
             const result = await this.yearRepository.delete(id);

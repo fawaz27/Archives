@@ -24,15 +24,15 @@ export class SubjectController{
         this.router
             .all(`${this.path}`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
-            .get(this.path,this.GetAllSubjets)
-            .post(this.path,validationMiddleware(CreateSubjectDto),this.CreateSubject);
+            .get(this.path,this.getAllSubjets)
+            .post(this.path,validationMiddleware(CreateSubjectDto),this.createSubject);
 
         this.router
             .all(`${this.path}/*`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
-            .get(`${this.path}/:id_subject`,this.GetSubjectById)
-            .put(`${this.path}/:id_subject`,validationMiddleware(CreateSubjectDto),this.UpdateSubject)
-            .delete(`${this.path}/:id_subject`,this.DeleteSubject)
+            .get(`${this.path}/:id_subject`,this.getSubjectById)
+            .put(`${this.path}/:id_subject`,validationMiddleware(CreateSubjectDto),this.updateSubject)
+            .delete(`${this.path}/:id_subject`,this.deleteSubject)
 
 
         
@@ -40,26 +40,26 @@ export class SubjectController{
     }
 
 
-    public GetAllSubjets = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
+    public getAllSubjets = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
       
         const id_class = request.params.id_class;
         try {
-            const result = await this.subjectService.GetAllSubjects(Number(id_class));
-            response.send(result);
+            const result = await this.subjectService.getAllSubjects(Number(id_class));
+            response.status(200).send(result);
         } catch (error) {
             next(error);
         }
     }
 
 
-    public CreateSubject = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    public createSubject = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const id_class = request.params.id_class;
         const SubjectData:CreateSubjectDto =request.body;
 
         try {
             
-            const created= await this.subjectService.CreateSubject(Number(id_class),SubjectData);
-            response.send(created);
+            const created= await this.subjectService.createSubject(Number(id_class),SubjectData);
+            response.status(201).send(created);
         } catch (error) {
 
             next(error);            
@@ -67,41 +67,41 @@ export class SubjectController{
     }
 
 
-    public GetSubjectById = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    public getSubjectById = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
         const id_class = request.params.id_class;
         const id_subject = request.params.id_subject;
         try {
-            const subject = await this.subjectService.GetSubjectById(Number(id_class),Number(id_subject));
-            response.send(subject);
+            const subject = await this.subjectService.getSubjectById(Number(id_class),Number(id_subject));
+            response.status(200).send(subject);
         } catch (error) {
             next(error);
         }
 
     }
 
-    public UpdateSubject = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
+    public updateSubject = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
     
         const id_class = request.params.id_class;
         const id_subject = request.params.id_subject;
         const SubjectData:CreateSubjectDto = request.body;
 
         try {
-           const result = await this.subjectService.UpdateSubject(SubjectData,Number(id_class),Number(id_subject));
-           response.send(result);        
+           const result = await this.subjectService.updateSubject(SubjectData,Number(id_class),Number(id_subject));
+           response.status(200).send(result);        
         } catch (error) {
             next(error);
         }
     }
 
 
-    public DeleteSubject = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
+    public deleteSubject = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
 
         const id_class = request.params.id_class;
         const id_subject = request.params.id_subject;
         try {
-            const result = await this.subjectService.DeleteSubject(Number(id_class),Number(id_subject)) ;
-            response.send(`Subject with id ${id_subject} has been deleted`)
+            const result = await this.subjectService.deleteSubject(Number(id_class),Number(id_subject)) ;
+            response.status(200).send(`Subject with id ${id_subject} has been deleted`)
             
         } catch (error) {
             next(error);

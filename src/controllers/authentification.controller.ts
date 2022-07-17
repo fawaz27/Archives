@@ -31,11 +31,9 @@ export class AuthentificationController{
         const TeacherData:CreateTeacherDto =request.body;
         //console.log(TeacherData);
         try {
-            const {cookie,created}= await this.authService.Register(TeacherData);
-            response.setHeader('Set-Cookie', [cookie]);
-            response.send(created);
-
-            
+            const created= await this.authService.register(TeacherData);
+            response.status(201).send(created);
+   
         } catch (error) {
            
             next(error);
@@ -43,12 +41,13 @@ export class AuthentificationController{
     }
 
     public  logIn = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
-        const email:string= request.body.email;
-        const password:string=request.body.password; 
+        
+        const login:logInDto=request.body;
+        
         try {
-            const {cookie,result} = await this.authService.LogIn(email,password);
-            response.setHeader('Set-Cookie', [cookie]);
-            response.send(result);
+            const {cookie,result} = await this.authService.logIn(login);
+            response.setHeader('Set-Cookie', [cookie]);//?
+            response.status(200).send(result);
 
 
         } catch (error) {
@@ -60,8 +59,9 @@ export class AuthentificationController{
     public  logOut = async(request: express.Request, response: express.Response)=>{
         
         try {
-            response.setHeader('Set-Cookie', [await this.authService.LogOut()]);
-            response.send(200);
+            const result = await this.authService.logOut()
+            response.setHeader('Set-Cookie', [result]);
+            response.status(200).send();
         } catch (error) {
             console.log(error);
             

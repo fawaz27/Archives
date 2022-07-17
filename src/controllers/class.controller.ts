@@ -23,38 +23,38 @@ export class ClassController{
         this.router
             .all(`${this.path}`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
-            .get(this.path,this.GetAllClasses)
-            .post(this.path,validationMiddleware(CreateClasseDto),this.CreateClass);
+            .get(this.path,this.getAllClasses)
+            .post(this.path,validationMiddleware(CreateClasseDto),this.createClass);
 
         this.router
             .all(`${this.path}/*`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
-            .get(`${this.path}/:id`,this.GetClassById)
-            .put(`${this.path}/:id`,validationMiddleware(CreateClasseDto),this.UpdateClass)
-            .delete(`${this.path}/:id`,this.DeleteClass)
+            .get(`${this.path}/:id`,this.getClassById)
+            .put(`${this.path}/:id`,validationMiddleware(CreateClasseDto),this.updateClass)
+            .delete(`${this.path}/:id`,this.deleteClass)
 
 
         
         
     }
 
-    public GetAllClasses = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
+    public getAllClasses = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
       
         try {
-            const result = await this.classService.GetAllClasses();
-            response.send(result);
+            const result = await this.classService.getAllClasses();
+            response.status(200).send(result);
         } catch (error) {
             next(error);
         }
     }
 
-    public CreateClass = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    public createClass = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const ClassData:CreateClasseDto =request.body;
 
         try {
             
-            const created= await this.classService.CreateClass(ClassData);
-            response.send(created);
+            const created= await this.classService.createClass(ClassData);
+            response.status(201).send(created);
         } catch (error) {
 
             next(error);            
@@ -62,12 +62,12 @@ export class ClassController{
     }
 
 
-    public GetClassById = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    public getClassById = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
         const id = request.params.id;
         try {
-            const classe = await this.classService.GetClasseById(Number(id));
-            response.send(classe);
+            const classe = await this.classService.getClasseById(Number(id));
+            response.status(200).send(classe);
         } catch (error) {
             next(error);
         }
@@ -76,26 +76,26 @@ export class ClassController{
 
     
 
-    public UpdateClass = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
+    public updateClass = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
     
         const id = request.params.id;
         const ClassData:CreateClasseDto = request.body;
 
         try {
-           const result = await this.classService.UpdateClasse(ClassData,Number(id));
-           response.send(result);        
+           const result = await this.classService.updateClasse(ClassData,Number(id));
+           response.status(200).send(result);        
         } catch (error) {
             next(error);
         }
     }
 
 
-    public DeleteClass = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
+    public deleteClass = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
 
         const id = request.params.id;
         try {
-            const result = await this.classService.DeleteClasse(Number(id)) ;
-            response.send(`Class with id ${id} has been deleted`)
+            const result = await this.classService.deleteClasse(Number(id)) ;
+            response.status(200).send(`Class with id ${id} has been deleted`);
             
         } catch (error) {
             next(error);

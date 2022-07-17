@@ -27,7 +27,7 @@ export class SubjectService{
     }
 
 
-    public async GetAllSubjects(id_class:number){
+    public async getAllSubjects(id_class:number){
 
         const classe =await this.classRepository.findOneBy({id:id_class});
 
@@ -39,9 +39,10 @@ export class SubjectService{
                 .where("class.id = :id_class",{id_class:classe.id})
                 .getMany();
         
-            if (subjects && JSON.stringify(subjects)!='[]') {
+            if (subjects && subjects.length!=0) {
                 return subjects;
-            } else {
+            } 
+            else {
                 throw new NoSubjectForClassFoundException(classe.name);
             }
         } else {
@@ -53,7 +54,7 @@ export class SubjectService{
         
     }
 
-    public async CreateSubject(id_class:number,subject:CreateSubjectDto){
+    public async createSubject(id_class:number,subject:CreateSubjectDto){
 
             
             const classe =await this.classRepository.findOneBy({id:id_class});
@@ -106,10 +107,10 @@ export class SubjectService{
                     const created = await this.subjectRepository.save(newSubject);
 
                     console.log(created);
-                    if (created) {
+                    if (created) 
                         return created;
                         
-                    }
+                    
 
                 }
                
@@ -124,7 +125,7 @@ export class SubjectService{
         
     }
 
-    public async GetSubjectById(id_class:number,id_subject:number){
+    public async getSubjectById(id_class:number,id_subject:number){
         
         const classe =await this.classRepository.findOneBy({id:id_class});
 
@@ -139,10 +140,12 @@ export class SubjectService{
         
             if (subject) {
                 return subject;
-            } else {
+            } 
+            else {
                 throw new SubjectWithThatIDNotExistsInClassException(id_subject,classe.name);
             }
-        } else {
+        } 
+        else {
             throw new ClassWithThatIDNotExistsException(id_class);
         }
         
@@ -151,7 +154,7 @@ export class SubjectService{
 
 
 
-    public async UpdateSubject(subject:CreateSubjectDto,id_class:number,id_subject:number){
+    public async updateSubject(subject:CreateSubjectDto,id_class:number,id_subject:number){
     
         const classe =await this.classRepository.findOneBy({id:id_class});
 
@@ -226,14 +229,17 @@ export class SubjectService{
         
                         if (result) {
                             return result;
-                        } else {
+                        } 
+                        else {
                             throw new InternalErrorException();
                         }
 
-                    } else {
+                    } 
+                    else {
                         throw new TeacherWithThatIDNotExistsException(subject.id_teacher)
                     }
-                } else{
+                } 
+                else{
                     subjectUpdate.name=subject.name;
 
                     const result = await this.subjectRepository.save(subjectUpdate);
@@ -247,7 +253,8 @@ export class SubjectService{
                 }
 
 
-            } else {
+            } 
+            else {
                 throw new SubjectWithThatIDNotExistsInClassException(id_subject,classe.name);
             }
             
@@ -261,7 +268,7 @@ export class SubjectService{
 
 
 
-    public async DeleteSubject(id_class:number,id_subject:number){ 
+    public async deleteSubject(id_class:number,id_subject:number){ 
 
         const classe =await this.classRepository.findOneBy({id:id_class});
 
@@ -276,10 +283,12 @@ export class SubjectService{
             if (subject) {
                 const result = await this.subjectRepository.delete(id_subject);
                 return id_subject;
-            } else {
+            } 
+            else {
                 throw new SubjectWithThatIDNotExistsException(id_subject);
             }
-        } else {
+        } 
+        else {
             throw new ClassWithThatIDNotExistsException(id_class);
         }
         

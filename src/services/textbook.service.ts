@@ -28,7 +28,7 @@ export class TextbookService {
         
     }
 
-    public async GetAllTextbooks(id_class:number){
+    public async getAllTextbooks(id_class:number){
 
         const classe = await this.classRepository.findOneBy({id:id_class}); 
 
@@ -41,18 +41,20 @@ export class TextbookService {
                     .leftJoinAndSelect("textbook.year_academic","year")
                     .where("class.id = :id_class",{id_class:id_class})
                     .getMany()
-            if (textbooks && JSON.stringify(textbooks)!='[]') {
+            if (textbooks && textbooks.length!=0) {
                 return textbooks;
-            } else {
+            } 
+            else {
                 throw new NoTextbookFoundForClassException(classe.name);
             }
 
-        } else {
+        } 
+        else {
             throw new ClassWithThatIDNotExistsException(id_class);
         }
     }
 
-    public async CreateTextbook(id_class:number,textbook:CreateTextbookDto){
+    public async createTextbook(id_class:number,textbook:CreateTextbookDto){
 
 
 
@@ -86,17 +88,20 @@ export class TextbookService {
                         
                         if (created) {
                             return created;
-                        } else {
+                        } 
+                        else {
                             throw new InternalErrorException();
                         }
                 }
                 
 
-            } else{
+            } 
+            else{
                 throw new YearWithThatNameNotExistsException(textbook.yearAcademic);
             }
    
-        } else {
+        } 
+        else {
             throw new ClassWithThatIDNotExistsException(id_class);
         }     
         
@@ -105,7 +110,7 @@ export class TextbookService {
 
 
 
-    public async GetTextbookById(id_class:number,id_textbook:number){
+    public async getTextbookById(id_class:number,id_textbook:number){
 
         const classe =await this.classRepository.findOneBy({id:id_class});
 
@@ -120,11 +125,13 @@ export class TextbookService {
 
             if (textbook) {
                 return textbook;
-            } else {
+            } 
+            else {
                 throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
             }
         
-        } else {
+        } 
+        else {
 
             throw new ClassWithThatIDNotExistsException(id_class);
 
@@ -136,7 +143,7 @@ export class TextbookService {
 
 
 
-    public async UpdateTextbook(textbook:CreateTextbookDto,id_class:number,id_textbook:number){
+    public async updateTextbook(textbook:CreateTextbookDto,id_class:number,id_textbook:number){
 
 
         const classe =await this.classRepository.findOneBy({id:id_class});
@@ -166,30 +173,35 @@ export class TextbookService {
 
                             throw new ClassWithThatNameHaveAlreadyTextbookException(isAlreadyExist.classe.name,isAlreadyExist.year_academic.year);
                             
-                        } else {
+                        } 
+                        else {
 
                             textbookUpdate.year_academic=year;
                             textbookUpdate.title = "Textbook - "+classe.name+" - "+year.year;
                             const result = await this.textbookRepository.save(textbookUpdate);
                             if (result) {
                                 return result;
-                            } else {
+                            } 
+                            else {
                                 throw new InternalErrorException();
                             }
                         }
 
 
 
-                    } else {
+                    } 
+                    else {
                         throw new YearWithThatNameNotExistsException(textbook.yearAcademic); 
                     }  
                     
                     
-                } else {
+                } 
+                else {
                     throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
                 }
                 
-        } else{
+        } 
+        else{
             throw new ClassWithThatIDNotExistsException(id_class);
         }
 
@@ -198,7 +210,7 @@ export class TextbookService {
 
 
     
-    public async DeleteTextbook(id_class:number,id_textbook:number){
+    public async deleteTextbook(id_class:number,id_textbook:number){
         
         const classe =await this.classRepository.findOneBy({id:id_class});
 
@@ -213,10 +225,12 @@ export class TextbookService {
             if (textbook) {
                 const result = await this.textbookRepository.delete(id_textbook);
                 return id_textbook;
-            } else {
+            } 
+            else {
                 throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
             }
-        } else {
+        } 
+        else {
             throw new ClassWithThatIDNotExistsException(id_class);
         }
 

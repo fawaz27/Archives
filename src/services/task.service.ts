@@ -27,7 +27,7 @@ export class TaskService{
        
     }
 
-    public async GetAllTasksInSession(id_class:number,id_textbook:number,id_session:number){
+    public async getAllTasksInSession(id_class:number,id_textbook:number,id_session:number){
 
         const classe = await this.classRepository.findOneBy({id:id_class}); 
 
@@ -57,24 +57,28 @@ export class TaskService{
                             .where("session.id = :id_session",{id_session:session.id})
                             .getMany();
 
-                    if (tasks && JSON.stringify(tasks)!='[]') {
+                    if (tasks && tasks.length!=0) {
                         return tasks;
                     
-                    } else {
+                    } 
+                    else {
                          throw new NoTaskFoundInSessionException(session.id);
                     }
                         
 
-                } else {
+                } 
+                else {
                     throw new SessionWithThatIDNotExistsInTextbookException(id_session,textbook.title);  
                 }
 
-            } else {
+            } 
+            else {
                 
                 throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
             }
 
-        } else {
+        } 
+        else {
 
             throw new ClassWithThatIDNotExistsException(id_class);
 
@@ -83,7 +87,7 @@ export class TaskService{
 
     }
 
-    public async CreateTask(id_class:number,id_textbook:number,id_session:number,task:CreateTaskDto){
+    public async createTask(id_class:number,id_textbook:number,id_session:number,task:CreateTaskDto){
 
         const classe = await this.classRepository.findOneBy({id:id_class}); 
 
@@ -123,23 +127,27 @@ export class TaskService{
 
                     if (created) {
                         return created;
-                    } else {
+                    } 
+                    else {
                         throw new InternalErrorException();
                     }
 
 
                             
 
-                } else {
+                } 
+                else {
                     throw new SessionWithThatIDNotExistsInTextbookException(id_session,textbook.title);  
                 }
 
-            } else {
+            } 
+            else {
                 
                 throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
             }
 
-        } else {
+        } 
+        else {
 
             throw new ClassWithThatIDNotExistsException(id_class);
 
@@ -149,7 +157,7 @@ export class TaskService{
 
 
 
-    public async GetTaskById(id_class:number,id_textbook:number,id_session:number,id_task:number){
+    public async getTaskById(id_class:number,id_textbook:number,id_session:number,id_task:number){
         
 
         const classe = await this.classRepository.findOneBy({id:id_class}); 
@@ -186,20 +194,24 @@ export class TaskService{
 
                     if (task) {
                         return task;
-                    } else {
+                    } 
+                    else {
                         
                     }
 
-                } else {
+                } 
+                else {
                     throw new SessionWithThatIDNotExistsInTextbookException(id_session,textbook.title);  
                 }
 
-            } else {
+            } 
+            else {
                 
                 throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
             }
 
-        } else {
+        } 
+        else {
 
             throw new ClassWithThatIDNotExistsException(id_class);
 
@@ -210,7 +222,7 @@ export class TaskService{
     }
 
 
-    public async UpdateTask(id_class:number,id_textbook:number,id_session:number,id_task:number,task:CreateTaskDto){
+    public async updateTask(id_class:number,id_textbook:number,id_session:number,id_task:number,task:CreateTaskDto){
         
 
         const classe = await this.classRepository.findOneBy({id:id_class}); 
@@ -258,25 +270,30 @@ export class TaskService{
 
                         if (result) {
                             return result;
-                        } else {
+                        } 
+                        else {
                             throw new InternalErrorException();
                         }
 
                         
-                    } else {
+                    } 
+                    else {
                         
                     }
 
-                } else {
+                } 
+                else {
                     throw new SessionWithThatIDNotExistsInTextbookException(id_session,textbook.title);  
                 }
 
-            } else {
+            } 
+            else {
                 
                 throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
             }
 
-        } else {
+        } 
+        else {
 
             throw new ClassWithThatIDNotExistsException(id_class);
 
@@ -286,7 +303,7 @@ export class TaskService{
 
     }
 
-    public async DeleteTask(id_class:number,id_textbook:number,id_session:number,id_task:number){
+    public async deleteTask(id_class:number,id_textbook:number,id_session:number,id_task:number){
         
 
         const classe = await this.classRepository.findOneBy({id:id_class}); 
@@ -323,21 +340,25 @@ export class TaskService{
                     if (task) {
                         const result = await this.taskRepository.delete(id_task);
                             return id_task;
-                    } else {
+                    } 
+                    else {
                         
                     }
 
 
-                } else {
+                } 
+                else {
                     throw new SessionWithThatIDNotExistsInTextbookException(id_session,textbook.title);  
                 }
 
-            } else {
+            } 
+            else {
                 
                 throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
             }
 
-        } else {
+        } 
+        else {
 
             throw new ClassWithThatIDNotExistsException(id_class);
 

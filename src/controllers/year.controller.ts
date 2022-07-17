@@ -24,15 +24,15 @@ export class YearController{
         this.router
             .all(`${this.path}`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
-            .get(this.path,this.GetAllYears)
-            .post(this.path,validationMiddleware(CreateYearDto),this.CreateYear);
+            .get(this.path,this.getAllYears)
+            .post(this.path,validationMiddleware(CreateYearDto),this.createYear);
 
         this.router
             .all(`${this.path}/*`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
-            .get(`${this.path}/:id_year`,this.GetYearById)
-            .put(`${this.path}/:id_year`,validationMiddleware(CreateYearDto),this.UpdateYear)
-            .delete(`${this.path}/:id_year`,this.DeleteYear)
+            .get(`${this.path}/:id_year`,this.getYearById)
+            .put(`${this.path}/:id_year`,validationMiddleware(CreateYearDto),this.updateYear)
+            .delete(`${this.path}/:id_year`,this.deleteYear)
 
 
         
@@ -41,26 +41,26 @@ export class YearController{
 
 
 
-    public GetAllYears = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
+    public getAllYears = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
       
         
         try {
-            const result = await this.yearService.GetAllYears();
-            response.send(result);
+            const result = await this.yearService.getAllYears();
+            response.status(200).send(result);
         } catch (error) {
             next(error);
         }
     }
 
 
-    public CreateYear = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    public createYear = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         
         const YearData:CreateYearDto =request.body;
 
         try {
             
-            const created= await this.yearService.CreateYear(YearData);
-            response.send(created);
+            const created= await this.yearService.createYear(YearData);
+            response.status(201).send(created);
         } catch (error) {
 
             next(error);            
@@ -68,41 +68,41 @@ export class YearController{
     }
 
 
-    public GetYearById = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    public getYearById = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
         
         const id_year = request.params.id_year;
         try {
-            const year = await this.yearService.GetYearById(Number(id_year));
-            response.send(year);
+            const year = await this.yearService.getYearById(Number(id_year));
+            response.status(200).send(year);
         } catch (error) {
             next(error);
         }
 
     }
 
-    public UpdateYear = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
+    public updateYear = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
     
         
         const id_year = request.params.id_year;
         const YearData:CreateYearDto = request.body;
 
         try {
-           const result = await this.yearService.UpdateYear(YearData,Number(id_year));
-           response.send(result);        
+           const result = await this.yearService.updateYear(YearData,Number(id_year));
+           response.status(200).send(result);        
         } catch (error) {
             next(error);
         }
     }
 
 
-    public DeleteYear = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
+    public deleteYear = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
 
         
         const id_year = request.params.id_year;
         try {
-            const result = await this.yearService.DeleteYear(Number(id_year)) ;
-            response.send(`Year with id ${id_year} has been deleted`)
+            const result = await this.yearService.deleteYear(Number(id_year)) ;
+            response.status(200).send(`Year with id ${id_year} has been deleted`)
             
         } catch (error) {
             next(error);

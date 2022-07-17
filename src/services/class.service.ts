@@ -17,19 +17,20 @@ export class ClassService {
         
     }
 
-    public async GetAllClasses(){
+    public async getAllClasses(){
 
 
         const classes = await this.classRepository.find();
-        if (classes && JSON.stringify(classes)!='[]') {
+        if (classes && classes.length!=0) {
             return classes;
-        } else {
+        } 
+        else {
             throw new NoClassFoundException();
         }
     }
 
     
-    public async CreateClass(classe:CreateClassDto){
+    public async createClass(classe:CreateClassDto){
         
         
         const isAlreadyExist =  await this.classRepository
@@ -63,19 +64,20 @@ export class ClassService {
     }
 
 
-    public async GetClasseById(id:number){
+    public async getClasseById(id:number){
         const classe = await this.classRepository.findOneBy({id:id});
 
         if (classe) {
             return classe;
-        } else {
+        } 
+        else {
             throw  new ClassWithThatIDNotExistsException(id);
         }
         
     }
 
 
-    public async UpdateClasse(classe:CreateClassDto,id:number){
+    public async updateClasse(classe:CreateClassDto,id:number){
         const classeUpdate = await this.classRepository.findOneBy({id:id});
 
         if (classeUpdate) {
@@ -85,12 +87,14 @@ export class ClassService {
                 const result = await this.classRepository.save(classeUpdate);
                 if (result) {
                     return result;
-                } else {
+                } 
+                else {
                     throw new InternalErrorException();      
                 }       
                      
             
-        } else {
+        } 
+        else {
              throw  new ClassWithThatIDNotExistsException(id);
         }
         
@@ -99,16 +103,18 @@ export class ClassService {
     }
 
 
-    public async DeleteClasse(id:number){
+    public async deleteClasse(id:number){
         const classe = await this.classRepository.findOneBy({id:id});
         if (classe) {
             const result = await this.classRepository.delete(id);
             if (result) {
                 return id;
-            } else {
+            } 
+            else {
                 throw new InternalErrorException();
             }
-        } else {
+        } 
+        else {
             throw new ClassWithThatIDNotExistsException(id);
         }
     }

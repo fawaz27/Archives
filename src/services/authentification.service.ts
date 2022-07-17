@@ -8,6 +8,7 @@ import WrongCredentialsException from '../exceptions/WrongCredentialsException';
 import TokenData from '../interfaces/tokenData.interface';
 import DataStoredInToken from '../interfaces/dataStoredInToken.interface';
 import InternalErrorException from '../exceptions/InternalErrorException';
+import logInDto from '../dto/login.dto';
 
 export class AuthentificationService{
 
@@ -20,7 +21,7 @@ export class AuthentificationService{
     }
 
 
-    public async Register (teacher:CreateTeacherDto){
+    public async register (teacher:CreateTeacherDto){
         
         
         const result = await this.teacherRepository.findOne( {where:{email:teacher.email}}  );
@@ -29,7 +30,8 @@ export class AuthentificationService{
         if (result) {
             throw new UserWithThatEmailAlreadyExistsException(teacher.email);
 
-        } else {
+        } 
+        else {
 
             const hashedPassword = await bcrypt.hash(teacher.hashPassword, 10);
 
@@ -40,9 +42,7 @@ export class AuthentificationService{
 
             console.log(created);
             if (created) {
-                const tokenData = this.createToken(created);
-                const cookie = this.createCookie(tokenData);
-                return {cookie,created};
+                return created;
             }
             else{
                 throw new InternalErrorException();
@@ -53,18 +53,20 @@ export class AuthentificationService{
         }
     }
 
-    public async LogIn(email:string,password:string){
-        const result = await this.teacherRepository.findOne(({where:{email:`${email}`}}));
+    public async logIn(login:logInDto){
+        
+        const result = await this.teacherRepository.findOne(({where:{email:`${login.email}`}}));
         console.log(result);
         if (result) {
-            const isPassword = await bcrypt.compare(password,result.hashPassword);
-            //console.log("Is password :"+isPassword)
+            const isPassword = await bcrypt.compare(login.password,result.hashPassword);
+            
             if (isPassword) {
                 const tokenData = this.createToken(result);
                 const cookie = this.createCookie(tokenData);
                 return {cookie,result};
 
-            } else {
+            } 
+            else {
                 throw new WrongCredentialsException();
             }
 
@@ -77,7 +79,7 @@ export class AuthentificationService{
 
     }
 
-    public async LogOut(){
+    public async logOut(){
         return 'Authorization=;Max-age=0';
     }
 

@@ -2,7 +2,7 @@ import { Request } from 'express';
 import { Teacher } from '../models/teacher.entity'
 
 
-interface RequestWithUser extends Request {
+interface RequestWithTeacher extends Request {
     user:Teacher;
 }
-export default RequestWithUser;
+export default RequestWithTeacher;
