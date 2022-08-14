@@ -7,7 +7,7 @@ class SessionWithThatIDNotExistsException extends HttpException
 
     constructor(id: number)
     {
-        super(400, `Session with id ${id} not exists`);
+        super(404, `Session with id ${id} not exists`);
     }
 }
 

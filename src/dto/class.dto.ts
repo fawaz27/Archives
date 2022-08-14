@@ -1,4 +1,5 @@
 import {IsString,IsNotEmpty, IsNumber} from 'class-validator'
+import { validationMetadatasToSchemas } from 'class-validator-jsonschema'
 
 class CreateClassDto{
 

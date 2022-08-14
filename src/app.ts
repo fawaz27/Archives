@@ -1,11 +1,12 @@
 
 
 import  express, {Application} from 'express';
-import  bodyParser from "body-parser";
+import  bodyParser, { json } from "body-parser";
 import  morgan from "morgan";
 import cookieParser from 'cookie-parser'
 import errorMiddleware from './middlewares/errorMiddleware';
-
+import swaggerUi from 'swagger-ui-express'
+import swaggerDocument from './docs/swaggerDocument';
 
 class App {
   public app: Application;
@@ -44,6 +45,11 @@ class App {
         this.app.use(cookieParser());
         this.app.use(morgan("tiny"));
         this.app.use(express.static("public"));
+        this.app.use(
+          '/api-docs',
+          swaggerUi.serve, 
+          swaggerUi.setup(swaggerDocument,{ explorer: true })
+        );
         
     }
 

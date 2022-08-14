@@ -21,14 +21,14 @@ export class ClassController{
     private initializeRoutes()
     {
         this.router
-            .all(`${this.path}`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
-            .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
+            // .all(`${this.path}`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
+            // .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .get(this.path,this.getAllClasses)
             .post(this.path,validationMiddleware(CreateClasseDto),this.createClass);
 
         this.router
-            .all(`${this.path}/*`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
-            .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
+            // .all(`${this.path}/*`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
+            // .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .get(`${this.path}/:id`,this.getClassById)
             .put(`${this.path}/:id`,validationMiddleware(CreateClasseDto),this.updateClass)
             .delete(`${this.path}/:id`,this.deleteClass)
@@ -50,6 +50,7 @@ export class ClassController{
 
     public createClass = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const ClassData:CreateClasseDto =request.body;
+        
 
         try {
             

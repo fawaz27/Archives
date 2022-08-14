@@ -9,7 +9,6 @@ class CreateTaskDto{
     @IsString()
     public title: string;
 
-    @IsNotEmpty({message: ' please the date_diven is required'})
     @IsString()
     public date_given: string;
     

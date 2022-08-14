@@ -7,7 +7,7 @@ class UserWithThatEmailNotExistsException extends HttpException
 
     constructor(email: string)
     {
-        super(400, `User with email ${email} not exists`);
+        super(404, `User with email ${email} not exists`);
     }
 }
 

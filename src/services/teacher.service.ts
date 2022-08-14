@@ -7,15 +7,34 @@ import UserWithThatEmailAlreadyExistsException from '../exceptions/teacher/UserW
 import UserWithThatEmailNotExistsException from '../exceptions/teacher/UserWithThatEmailNotExistsException';
 import UserWithThatIDNotExistsException from '../exceptions/teacher/UserWithThatIDNotExistsException';
 import { Teacher } from '../models/teacher.entity'
+import { Subject } from '../models/subject.entity';
+import { Textbook } from '../models/textbook.entity';
+import { Session } from '../models/session.entity';
+import { Year_Academic } from '../models/year_academic.entity';
 import   bcrypt from 'bcrypt';
+import TeacherWithIdHasNoSubjectsException from '../exceptions/teacher/TeacherWithIdHasNoSubjectsException';
+import NoTexbookFoundForClassForYearException from '../exceptions/textbook/NoTexbookFoundForClassForYearException';
+import YearWithThatNameNotExistsException from '../exceptions/year/YearWithThatNameNotExistsException';
+import NoSessionFoundForSubjectInClassForYearException from '../exceptions/session/NoSessionFoundForSubjectInClassForYearException';
+import CreateSessionDto from '../dto/session.dto';
+import SessionWithThatIDNotExistsInTextbookException from '../exceptions/session/SessionWithThatIDNotExistsInTextbookException';
+import TeacherWithIdHasNoSubjectsWithIDException from '../exceptions/teacher/TeacherWithIdHasNoSubjectsWithIDException';
 
 export class TeacherService{
 
     public teacherRepository;
+    public subjectRepository;
+    public textbookRepository;
+    public sessionRepository;
+    public yearRepository;
     
     constructor(){
         
         this.teacherRepository=AppDataSource.getRepository(Teacher);
+        this.subjectRepository=AppDataSource.getRepository(Subject);
+        this.textbookRepository=AppDataSource.getRepository(Textbook);
+        this.sessionRepository=AppDataSource.getRepository(Session);
+        this.yearRepository=AppDataSource.getRepository(Year_Academic);
         
     }
 
@@ -130,5 +149,363 @@ export class TeacherService{
         
 
     }
+
+
+
+    public async getSubjectsTeacher(id:number){
+        const user = await this.teacherRepository.findOneBy({id:id});
+        
+        if (user) {
+
+
+            
+            const subjects= await this.subjectRepository 
+                .createQueryBuilder("subject")
+                .leftJoinAndSelect("subject.teacher","teacher")
+                .leftJoinAndSelect("subject.classe","classe")
+                .where("teacher.id = :id_teacher",{id_teacher:id})
+                .getMany();
+
+            if (subjects && subjects.length!=0) {
+                return subjects;
+            } 
+            else {
+                throw new TeacherWithIdHasNoSubjectsException(id)
+            }
+        } 
+        else {
+            throw new UserWithThatIDNotExistsException(id);
+        }
+
+    }
+
+
+    public async getSessionsTeacher(id:number,id_subject:number,year_academic:string){
+
+        const user = await this.teacherRepository.findOneBy({id:id});
+        
+        if (user) {
+
+
+            
+            const subject= await this.subjectRepository 
+                .createQueryBuilder("subject")
+                .leftJoinAndSelect("subject.teacher","teacher")
+                .leftJoinAndSelect("subject.classe","classe")
+                .where("teacher.id = :id_teacher",{id_teacher:id})
+                .andWhere("subject.id = :id_subject",{id_subject:id_subject})
+                .getOne();
+
+            if (subject) {
+
+                if(year_academic==undefined){
+                    let year_now = (new Date()).getFullYear();
+                    year_academic=year_now-1+'-'+year_now;
+                }
+
+                const year = await this.yearRepository.findOne({  where:{year:`${year_academic}`}});
+
+                if (year) {
+
+                    const textbook = await this.textbookRepository
+                    .createQueryBuilder("textbook")
+                    .leftJoinAndSelect("textbook.classe","class")
+                    .leftJoinAndSelect("textbook.year_academic","year")
+                    .where("year.year = :year_academic",{year_academic:year_academic})
+                    .andWhere("class.id = :id_class",{id_class:subject.classe.id})
+                    .getOne();
+
+                    if (textbook) {
+
+                        const sessions = await this.sessionRepository
+                            .createQueryBuilder("session")
+                            .leftJoinAndSelect("session.subject","subject")
+                            .leftJoinAndSelect("session.textbook","textbook")
+                            .where("subject.id = :id_subject",{id_subject:subject.id})
+                            .andWhere("textbook.id = :id_textbook",{id_textbook:textbook.id})
+                            .getMany();
+
+                        if (sessions && sessions.length!=0) {
+                            return sessions;
+                        } 
+                        else {
+                            throw new NoSessionFoundForSubjectInClassForYearException(subject.name,subject.classe.name,year_academic);
+                        }                    
+                    } 
+                    else{
+                        throw new NoTexbookFoundForClassForYearException(subject.classe.name,year_academic);
+                    }
+                        
+                } 
+                else {
+                    throw  new YearWithThatNameNotExistsException(year_academic);
+                }      
+            } 
+            else {
+                throw new TeacherWithIdHasNoSubjectsWithIDException(id,id_subject);
+            }
+        } 
+        else {
+            throw new UserWithThatIDNotExistsException(id);
+        }
+
+
+
+    }
+
+
+    public async addSession(id:number,id_subject:number,year_academic:string,session:CreateSessionDto){
+
+        const user = await this.teacherRepository.findOneBy({id:id});
+        
+        if (user) {
+
+
+            
+            const subject= await this.subjectRepository 
+                .createQueryBuilder("subject")
+                .leftJoinAndSelect("subject.teacher","teacher")
+                .leftJoinAndSelect("subject.classe","classe")
+                .where("teacher.id = :id_teacher",{id_teacher:id})
+                .andWhere("subject.id = :id_subject",{id_subject:id_subject})
+                .getOne();
+
+            if (subject) {
+
+                if(year_academic==undefined){
+                    let year_now = (new Date()).getFullYear();
+                    year_academic=year_now-1+'-'+year_now;
+                }
+
+                const year = await this.yearRepository.findOne({  where:{year:`${year_academic}`}});
+
+                if (year) {
+
+                    const textbook = await this.textbookRepository
+                    .createQueryBuilder("textbook")
+                    .leftJoinAndSelect("textbook.classe","class")
+                    .leftJoinAndSelect("textbook.year_academic","year")
+                    .where("year.year = :year_academic",{year_academic:year_academic})
+                    .andWhere("class.id = :id_class",{id_class:subject.classe.id})
+                    .getOne();
+
+                    if (textbook) {
+                        const newSession = new Session();
+                        newSession.title=session.title;
+                        newSession.date=session.date;
+                        newSession.annex_document=session.annex_document;
+                        newSession.description=session.description;
+                        newSession.duration=session.duration;
+                        newSession.summary_course=session.summary_course;
+                        newSession.point_of_presence=session.point_of_presence;
+                        newSession.start_time=session.start_time;
+                        newSession.end_time=session.end_time;
+                        newSession.subject=subject;
+                        newSession.textbook=textbook;
+
+                        const created = await this.sessionRepository.save(newSession);
+
+                        if (created) {
+                            return created;
+                            
+                        } 
+                        else {
+                            throw new InternalErrorException();
+                        }
+                    }
+                    else{
+                        throw new NoTexbookFoundForClassForYearException(subject.classe.name,year_academic);
+                    }
+                        
+                } 
+                else {
+                    throw  new YearWithThatNameNotExistsException(year_academic);
+                }      
+            } 
+            else {
+                throw new TeacherWithIdHasNoSubjectsException(id)
+            }
+        } 
+        else {
+            throw new UserWithThatIDNotExistsException(id);
+        }
+
+        
+    }
+
+
+    public async updateSession(id:number,id_subject:number,year_academic:string,id_session:number,session:CreateSessionDto){
+
+        const user = await this.teacherRepository.findOneBy({id:id});
+        
+        if (user) {
+
+
+            
+            const subject= await this.subjectRepository 
+                .createQueryBuilder("subject")
+                .leftJoinAndSelect("subject.teacher","teacher")
+                .leftJoinAndSelect("subject.classe","classe")
+                .where("teacher.id = :id_teacher",{id_teacher:id})
+                .andWhere("subject.id = :id_subject",{id_subject:id_subject})
+                .getOne();
+
+            if (subject) {
+
+                if(year_academic==undefined){
+                    let year_now = (new Date()).getFullYear();
+                    year_academic=year_now-1+'-'+year_now;
+                }
+
+                const year = await this.yearRepository.findOne({  where:{year:`${year_academic}`}});
+
+                if (year) {
+
+                    const textbook = await this.textbookRepository
+                    .createQueryBuilder("textbook")
+                    .leftJoinAndSelect("textbook.classe","class")
+                    .leftJoinAndSelect("textbook.year_academic","year")
+                    .where("year.year = :year_academic",{year_academic:year_academic})
+                    .andWhere("class.id = :id_class",{id_class:subject.classe.id})
+                    .getOne();
+
+                    if (textbook) {
+
+                        const sessionUpdate = await this.sessionRepository
+                            .createQueryBuilder("session")
+                            .leftJoinAndSelect("session.subject","subject")
+                            .leftJoinAndSelect("session.textbook","textbook")
+                            .where("session.id = :id_session",{id_session:id_session})
+                            .andWhere("textbook.id = :id_textbook",{id_textbook:textbook.id})
+                            .andWhere("subject.id = :id_subject",{id_subject:subject.id})
+                            .getOne();
+
+                        if (sessionUpdate) {
+                            sessionUpdate.title=session.title;
+                            sessionUpdate.date=session.date;
+                            sessionUpdate.annex_document=session.annex_document;
+                            sessionUpdate.description=session.description;
+                            sessionUpdate.duration=session.duration;
+                            sessionUpdate.summary_course=session.summary_course;
+                            sessionUpdate.point_of_presence=session.point_of_presence;
+                            sessionUpdate.start_time=session.start_time;
+                            sessionUpdate.end_time=session.end_time;
+
+                            const result = await this.sessionRepository.save(sessionUpdate);
+
+                            if (result) {
+                                return result;
+                            } 
+                            else {
+                                throw new InternalErrorException();
+                            }
+                        } 
+                        else {
+                            throw new SessionWithThatIDNotExistsInTextbookException(id_session,textbook.title);
+                        }
+
+                    }
+                    else{
+                        throw new NoTexbookFoundForClassForYearException(subject.classe.name,year_academic);
+                    }
+                        
+                } 
+                else {
+                    throw  new YearWithThatNameNotExistsException(year_academic);
+                }      
+            } 
+            else {
+                throw new TeacherWithIdHasNoSubjectsException(id)
+            }
+        } 
+        else {
+            throw new UserWithThatIDNotExistsException(id);
+        }
+
+    }
+
+
+    public async deleteSession(id:number,id_subject:number,year_academic:string,id_session:number){
+
+        const user = await this.teacherRepository.findOneBy({id:id});
+        
+        if (user) {
+
+
+            
+            const subject= await this.subjectRepository 
+                .createQueryBuilder("subject")
+                .leftJoinAndSelect("subject.teacher","teacher")
+                .leftJoinAndSelect("subject.classe","classe")
+                .where("teacher.id = :id_teacher",{id_teacher:id})
+                .andWhere("subject.id = :id_subject",{id_subject:id_subject})
+                .getOne();
+
+            if (subject) {
+
+                if(year_academic==undefined){
+                    let year_now = (new Date()).getFullYear();
+                    year_academic=year_now-1+'-'+year_now;
+                }
+
+                const year = await this.yearRepository.findOne({  where:{year:`${year_academic}`}});
+
+                if (year) {
+
+                    const textbook = await this.textbookRepository
+                    .createQueryBuilder("textbook")
+                    .leftJoinAndSelect("textbook.classe","class")
+                    .leftJoinAndSelect("textbook.year_academic","year")
+                    .where("year.year = :year_academic",{year_academic:year_academic})
+                    .andWhere("class.id = :id_class",{id_class:subject.classe.id})
+                    .getOne();
+
+                    if (textbook) {
+
+                        const session = await this.sessionRepository
+                            .createQueryBuilder("session")
+                            .leftJoinAndSelect("session.subject","subject")
+                            .leftJoinAndSelect("session.textbook","textbook")
+                            .where("session.id = :id_session",{id_session:id_session})
+                            .andWhere("textbook.id = :id_textbook",{id_textbook:textbook.id})
+                            .andWhere("subject.id = :id_subject",{id_subject:subject.id})
+                            .getOne();
+
+                        if (session) {
+                            const result = await this.sessionRepository.delete(id_session);
+                            return id_session;           
+                        } 
+                        else {
+                            throw new SessionWithThatIDNotExistsInTextbookException(id_session,textbook.title);
+                        }
+
+                    }
+                    else{
+                        throw new NoTexbookFoundForClassForYearException(subject.classe.name,year_academic);
+                    }
+                        
+                } 
+                else {
+                    throw  new YearWithThatNameNotExistsException(year_academic);
+                }      
+            } 
+            else {
+                throw new TeacherWithIdHasNoSubjectsException(id)
+            }
+        } 
+        else {
+            throw new UserWithThatIDNotExistsException(id);
+        }
+    }
+
+
+
+
+
+
+    
+
+
+
 
 }

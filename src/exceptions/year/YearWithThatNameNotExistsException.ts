@@ -7,7 +7,7 @@ class YearWithThatNameNotExistsException extends HttpException
 
     constructor(name: string)
     {
-        super(400, `Year with name ${name} not exists`);
+        super(404, `Year with name ${name} not exists`);
     }
 }
 

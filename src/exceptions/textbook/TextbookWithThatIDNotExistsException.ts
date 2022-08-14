@@ -7,7 +7,7 @@ class TextbookWithThatIDNotExistsException extends HttpException
 
     constructor(id: number)
     {
-        super(400, `Textbook with id ${id} not exists`);
+        super(404, `Textbook with id ${id} not exists`);
     }
 }
 

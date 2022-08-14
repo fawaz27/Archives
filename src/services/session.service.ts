@@ -173,7 +173,9 @@ export class SessionService{
                     newSession.description=session.description;
                     newSession.duration=session.duration;
                     newSession.summary_course=session.summary_course;
-
+                    newSession.point_of_presence=session.point_of_presence;
+                    newSession.start_time=session.start_time;
+                    newSession.end_time=session.end_time;
                     newSession.subject=subject;
                     newSession.textbook=textbook;
                     const created = await this.sessionRepository.save(newSession);
@@ -286,6 +288,9 @@ export class SessionService{
                     sessionUpdate.description=session.description;
                     sessionUpdate.duration=session.duration;
                     sessionUpdate.summary_course=session.summary_course;
+                    sessionUpdate.point_of_presence=session.point_of_presence;
+                    sessionUpdate.start_time=session.start_time;
+                    sessionUpdate.end_time=session.end_time;
 
                     const result = await this.sessionRepository.save(sessionUpdate);
 

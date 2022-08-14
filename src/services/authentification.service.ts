@@ -25,7 +25,6 @@ export class AuthentificationService{
         
         
         const result = await this.teacherRepository.findOne( {where:{email:teacher.email}}  );
-        //console.log(result);
 
         if (result) {
             throw new UserWithThatEmailAlreadyExistsException(teacher.email);
@@ -61,8 +60,10 @@ export class AuthentificationService{
             const isPassword = await bcrypt.compare(login.password,result.hashPassword);
             
             if (isPassword) {
+                result.hashPassword="";
                 const tokenData = this.createToken(result);
                 const cookie = this.createCookie(tokenData);
+                
                 return {cookie,result};
 
             } 

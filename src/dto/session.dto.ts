@@ -1,4 +1,5 @@
-import {IsString,IsNotEmpty,IsDate} from 'class-validator'
+import {IsString,IsNotEmpty,IsNumber} from 'class-validator'
+
 
 class CreateSessionDto{
 
@@ -6,6 +7,17 @@ class CreateSessionDto{
     @IsNotEmpty({message: ' please the date is required'})
     @IsString()
     public date: string;
+
+    @IsNotEmpty({message: ' please the start time is required'})
+    @IsString()
+    public start_time: string;
+
+    @IsNotEmpty({message: ' please the end   time is required'})
+    @IsString()
+    public end_time: string;
+
+    @IsNumber()
+    public duration: number;
 
     @IsNotEmpty({message: ' please the title is required'})
     @IsString()
@@ -17,12 +29,14 @@ class CreateSessionDto{
     @IsString()
     public annex_document: string;
 
+    @IsString()
+    public point_of_presence: string;
+
     @IsNotEmpty({message: ' please the summary_course is required'})
     @IsString()
     public summary_course: string;
 
-    @IsString()
-    public duration: string;
+    
 
 }
 

@@ -7,7 +7,7 @@ class UserWithThatIDNotExistsException extends HttpException
 
     constructor(id: number)
     {
-        super(400, `User with id ${id} not exists`);
+        super(404, `User with id ${id} not exists`);
     }
 }
 

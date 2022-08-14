@@ -12,7 +12,7 @@ async function authMiddleware(request: RequestWithTeacher, response: Response, n
    //console.log(request);
    //request.cookies={};
     const cookies =request.cookies;
-    //console.log(cookies);
+    console.log(cookies);
     
     if (cookies && cookies.Authorization) {
         const secret = process.env.JWT_KEY;
@@ -33,8 +33,6 @@ async function authMiddleware(request: RequestWithTeacher, response: Response, n
 
             
         } catch (error) {
-            console.log('test');
-            
             next(new WrongAuthenticationTokenException());
         }
         

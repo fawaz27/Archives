@@ -13,6 +13,15 @@ export class Session{
     public date: string;
 
     @Column()
+    public start_time: string;
+
+    @Column()
+    public end_time: string;
+    
+    @Column()
+    public duration: number;
+
+    @Column()
     public title: string;
 
     @Column()
@@ -25,7 +34,9 @@ export class Session{
     public summary_course: string;
 
     @Column()
-    public duration: string;
+    public point_of_presence: string;
+
+    
 
     @ManyToOne( ()=> Subject, (subject : Subject) => subject.sessions) 
     public subject: Subject;

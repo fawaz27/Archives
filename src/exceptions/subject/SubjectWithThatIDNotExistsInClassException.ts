@@ -7,7 +7,7 @@ class SubjectWithThatIDNotExistsInClassException extends HttpException
 
     constructor(id: number, classe:string )
     {
-        super(400, `Subject with id ${id} not exists in class ${classe} or there is no subject with id ${id}`);
+        super(404, `Subject with id ${id} not exists in class ${classe} or there is no subject with id ${id}`);
     }
 }
 
