@@ -198,10 +198,7 @@ export class TeacherService{
 
             if (subject) {
 
-                if(year_academic==undefined){
-                    let year_now = (new Date()).getFullYear();
-                    year_academic=year_now-1+'-'+year_now;
-                }
+                
 
                 const year = await this.yearRepository.findOne({  where:{year:`${year_academic}`}});
 
@@ -282,12 +279,12 @@ export class TeacherService{
                 if (year) {
 
                     const textbook = await this.textbookRepository
-                    .createQueryBuilder("textbook")
-                    .leftJoinAndSelect("textbook.classe","class")
-                    .leftJoinAndSelect("textbook.year_academic","year")
-                    .where("year.year = :year_academic",{year_academic:year_academic})
-                    .andWhere("class.id = :id_class",{id_class:subject.classe.id})
-                    .getOne();
+                        .createQueryBuilder("textbook")
+                        .leftJoinAndSelect("textbook.classe","class")
+                        .leftJoinAndSelect("textbook.year_academic","year")
+                        .where("year.year = :year_academic",{year_academic:year_academic})
+                        .andWhere("class.id = :id_class",{id_class:subject.classe.id})
+                        .getOne();
 
                     if (textbook) {
                         const newSession = new Session();

@@ -1,6 +1,6 @@
-const deleteclass ={
-    "tags":["Classes"],
-    "summary":"Delete class with given ID ",
+const deleteYear ={
+    "tags":["Year"],
+    "summary":"Delete Year with given ID ",
     "responses":{
         "200":{
         "description":"OK",
@@ -11,4 +11,4 @@ const deleteclass ={
     }
 }
 
-export default deleteclass;
+export default deleteYear;

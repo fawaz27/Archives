@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser'
 import errorMiddleware from './middlewares/errorMiddleware';
 import swaggerUi from 'swagger-ui-express'
 import swaggerDocument from './docs/swaggerDocument';
+import cors from 'cors'
 
 class App {
   public app: Application;
@@ -50,6 +51,8 @@ class App {
           swaggerUi.serve, 
           swaggerUi.setup(swaggerDocument,{ explorer: true })
         );
+        this.app.use(cors())
+
         
     }
 

@@ -8,11 +8,7 @@ const getclass ={
         "200":{
         "description":"OK",
         "schema":{
-            "type":"array",
-            "items":{
             "$ref": "#/definitions/Class"
-            }
-        
         }
         }
     }

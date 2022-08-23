@@ -15,12 +15,9 @@ const putclass ={
     "responses":{
         "200":{
         "description":"OK",
-        "schema":{
-            "type":"array",
-            "items":{
+        "schema":{   
             "$ref": "#/definitions/Class"
-            }
-        
+  
         }
         }
     }

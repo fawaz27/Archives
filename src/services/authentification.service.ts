@@ -53,6 +53,7 @@ export class AuthentificationService{
     }
 
     public async logIn(login:logInDto){
+        console.log(login);
         
         const result = await this.teacherRepository.findOne(({where:{email:`${login.email}`}}));
         console.log(result);

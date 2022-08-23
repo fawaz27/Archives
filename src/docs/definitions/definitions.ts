@@ -1,3 +1,4 @@
+import logindefinitions from "./Auth/Login.definitions";
 import classdefinitions from "./Classes/Class.definitions";
 import createClassDtodefinitions from "./Classes/CreateClassDto.definitions";
 import createSessionDtodefinitions from "./Session/CreateSessionDto.definitions";
@@ -27,7 +28,8 @@ const definitions ={
     "Teacher":teacherdefinitions,
     "CreateTeacherDto":createTeacherDtodefinitions,
     "Textbook":textbookdefinitions,
-    "CreateTextbookDto":createTextbookDtodefinitions
+    "CreateTextbookDto":createTextbookDtodefinitions,
+    "LoginDto":logindefinitions
 };
 
 export default definitions;
