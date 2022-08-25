@@ -11,6 +11,7 @@ import InternalErrorException from '../exceptions/InternalErrorException';
 import SubjectWithThatIDNotExistsInClassException from '../exceptions/subject/SubjectWithThatIDNotExistsInClassException';
 import TextbookWithThatIDNotExistsInClassException from '../exceptions/textbook/TextbookWithThatIDNotExistsInClassException';
 import SessionWithThatIDNotExistsInTextbookException from '../exceptions/session/SessionWithThatIDNotExistsInTextbookException';
+import TextbookWithThatIDNotExistsException from '../exceptions/textbook/TextbookWithThatIDNotExistsException';
 
 
 
@@ -30,17 +31,13 @@ export class SessionService{
         
     }
 
-    public async getAllSessionsSubject(id_class:number,id_textbook:number,id_subject:number){
+    public async getAllSessionsSubject(id_textbook:number,id_subject:number){
 
-        const classe = await this.classRepository.findOneBy({id:id_class}); 
-
-        if (classe) {
-            
+        
             const textbook = await this.textbookRepository
                 .createQueryBuilder("textbook")
                 .leftJoinAndSelect("textbook.classe","class")
                 .where("textbook.id = :id_textbook",{id_textbook:id_textbook})
-                .andWhere("class.id = :id_class",{id_class:classe.id})
                 .getOne();
             if (textbook) {
 
@@ -48,7 +45,7 @@ export class SessionService{
                         .createQueryBuilder("subject")
                         .leftJoinAndSelect("subject.classe","class")
                         .where("subject.id = :id_subject",{id_subject:id_subject})
-                        .andWhere("class.id = :id_class",{id_class:classe.id})
+                        .andWhere("class.id = :id_class",{id_class:textbook.classe.id})
                         .getOne();
 
                 if (subject) {
@@ -67,7 +64,7 @@ export class SessionService{
                     } 
                     else {
                        
-                        throw new NoSessionFoundForSubjectException(subject.name,classe.name);
+                        throw new NoSessionFoundForSubjectException(subject.name,textbook.classe.name);
 
                         
                     }
@@ -76,37 +73,31 @@ export class SessionService{
                     
                 } 
                 else {
-                    throw new SubjectWithThatIDNotExistsInClassException(id_subject,classe.name);
+                    throw new SubjectWithThatIDNotExistsInClassException(id_subject,textbook.classe.name);
                 }
                 
             } 
             else {
-                throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
+                throw new TextbookWithThatIDNotExistsException(id_textbook);
             }
             
-        } 
-        else {
-            throw new ClassWithThatIDNotExistsException(id_class);
-        }
-
+         
+        
 
         
     
         
     }
 
-    public async getAllSessions(id_class:number,id_textbook:number){
+    public async getAllSessions(id_textbook:number){
 
 
-        const classe = await this.classRepository.findOneBy({id:id_class}); 
-
-        if (classe) {
+        
             
             const textbook = await this.textbookRepository
                 .createQueryBuilder("textbook")
                 .leftJoinAndSelect("textbook.classe","class")
                 .where("textbook.id = :id_textbook",{id_textbook:id_textbook})
-                .andWhere("class.id = :id_class",{id_class:classe.id})
                 .getOne();
 
             if (textbook) {
@@ -125,35 +116,30 @@ export class SessionService{
                 } 
                 else {
                     
-                    throw new NoSessionFoundInTextbookException(textbook.title,classe.name);
+                    throw new NoSessionFoundInTextbookException(textbook.title,textbook.classe.name);
 
                     
                 }
                 
             } 
             else {
-                throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
+                throw new TextbookWithThatIDNotExistsException(id_textbook);
             }
             
-        } 
-        else {
-            throw new ClassWithThatIDNotExistsException(id_class);
-        }
+        
+       
 
     }
 
 
-    public async createSession(id_class:number,id_textbook:number,id_subject:number,session:CreateSessionDto){
+    public async createSession(id_textbook:number,id_subject:number,session:CreateSessionDto){
 
-        const classe = await this.classRepository.findOneBy({id:id_class}); 
-
-        if (classe) {
+        
             
             const textbook = await this.textbookRepository
                 .createQueryBuilder("textbook")
                 .leftJoinAndSelect("textbook.classe","class")
                 .where("textbook.id = :id_textbook",{id_textbook:id_textbook})
-                .andWhere("class.id = :id_class",{id_class:classe.id})
                 .getOne();
             if (textbook) {
 
@@ -161,7 +147,7 @@ export class SessionService{
                         .createQueryBuilder("subject")
                         .leftJoinAndSelect("subject.classe","class")
                         .where("subject.id = :id_subject",{id_subject:id_subject})
-                        .andWhere("class.id = :id_class",{id_class:classe.id})
+                        .andWhere("class.id = :id_class",{id_class:textbook.classe.id})
                         .getOne();
 
                 if (subject) {
@@ -190,34 +176,28 @@ export class SessionService{
 
                 } 
                 else {
-                    throw new SubjectWithThatIDNotExistsInClassException(id_subject,classe.name);
+                    throw new SubjectWithThatIDNotExistsInClassException(id_subject,textbook.classe.name);
                 }
                 
             } 
             else {
-                throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
+                throw new TextbookWithThatIDNotExistsException(id_textbook);
             }
             
-        } 
-        else {
-            throw new ClassWithThatIDNotExistsException(id_class);
-        }
+        
 
 
 
     }
 
-    public async getSessionById(id_class:number,id_textbook:number,id_session:number){
+    public async getSessionById(id_textbook:number,id_session:number){
 
-        const classe = await this.classRepository.findOneBy({id:id_class}); 
-
-        if (classe) {
+        
             
             const textbook = await this.textbookRepository
                     .createQueryBuilder("textbook")
                     .leftJoinAndSelect("textbook.classe","class")
                     .where("textbook.id = :id_textbook",{id_textbook:id_textbook})
-                    .andWhere("class.id = :id_class",{id_class:classe.id})
                     .getOne();
 
             if (textbook) {
@@ -242,31 +222,24 @@ export class SessionService{
 
             } 
             else {
-                throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
+                throw new TextbookWithThatIDNotExistsException(id_textbook);
             }
                 
-        } 
-        else {
-            throw new ClassWithThatIDNotExistsException(id_class);
-        }
 
 
     }
 
 
-    public async updateSession(id_class:number,id_textbook:number,id_session:number,session:CreateSessionDto){
+    public async updateSession(id_textbook:number,id_session:number,session:CreateSessionDto){
     
 
               
-        const classe = await this.classRepository.findOneBy({id:id_class}); 
-
-        if (classe) {
+        
             
             const textbook = await this.textbookRepository
                     .createQueryBuilder("textbook")
                     .leftJoinAndSelect("textbook.classe","class")
                     .where("textbook.id = :id_textbook",{id_textbook:id_textbook})
-                    .andWhere("class.id = :id_class",{id_class:classe.id})
                     .getOne();
 
             if (textbook) {
@@ -310,30 +283,23 @@ export class SessionService{
 
             } 
             else {
-                throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
+                throw new TextbookWithThatIDNotExistsException(id_textbook);
             }
                 
-        } 
-        else {
-            throw new ClassWithThatIDNotExistsException(id_class);
-        }
+       
 
     }
 
 
 
-    public async deleteSession(id_class:number,id_textbook:number,id_session:number){
+    public async deleteSession(id_textbook:number,id_session:number){
 
 
-        const classe = await this.classRepository.findOneBy({id:id_class}); 
-
-        if (classe) {
-            
+       
             const textbook = await this.textbookRepository
                     .createQueryBuilder("textbook")
                     .leftJoinAndSelect("textbook.classe","class")
                     .where("textbook.id = :id_textbook",{id_textbook:id_textbook})
-                    .andWhere("class.id = :id_class",{id_class:classe.id})
                     .getOne();
 
             if (textbook) {
@@ -361,13 +327,10 @@ export class SessionService{
 
             } 
             else {
-                throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
+                throw new TextbookWithThatIDNotExistsException(id_textbook);
             }
                         
-        } 
-        else {
-            throw new ClassWithThatIDNotExistsException(id_class);
-        }
+        
 
     
     }

@@ -1,13 +1,13 @@
 const putSessionByTeacher ={
     "tags":["Teachers"],
-    "summary":"Update Session with give ID by teacher" ,
+    "summary":"Update Session with give ID by teacher connected" ,
     "parameters":[
         {
-            "name":"session",
+            "name":"SessionYear",
             "in":"body",
             "description":"Session with new values of properties",
             "schema": {
-                "$ref": "#/definitions/CreateSessionDto"
+                "$ref": "#/definitions/CreateSessionYearDto"
             }
 
         }

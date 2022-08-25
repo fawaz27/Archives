@@ -1,13 +1,13 @@
 const postSessionByTeacher ={
     "tags":["Teachers"],
-    "summary":"Create a new Session by teacher with given ID",
+    "summary":"Create a new Session by teacher connected",
     "parameters":[
         {
-            "name":"Session",
+            "name":"SessionYear",
             "in":"body",
-            "description": "Session that we want to create",
+            "description": "Session that we want to create ",
             "schema": {
-              "$ref": "#/definitions/CreateSessionDto"
+              "$ref": "#/definitions/CreateSessionYearDto"
             }
         }
     ],

@@ -9,7 +9,7 @@ import CreateSessionDto from '../dto/session.dto';
 
 export class SessionController{
 
-    public path = '/classes/:id_class/textbooks/:id_textbook'
+    public path = '/textbooks/:id_textbook'
     public router =express.Router();
     public sessionService:SessionService;
 
@@ -42,11 +42,11 @@ export class SessionController{
 
     public getAllSessionsSubject = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
       
-        const id_class = request.params.id_class;
+       
         const id_subject = request.params.id_subject;
         const id_textbook = request.params.id_textbook;
         try {
-            const result = await this.sessionService.getAllSessionsSubject(Number(id_class),Number(id_textbook),Number(id_subject));
+            const result = await this.sessionService.getAllSessionsSubject(Number(id_textbook),Number(id_subject));
             response.status(200).send(result);
         } catch (error) {
             next(error);
@@ -56,10 +56,10 @@ export class SessionController{
 
     public getAllSessions = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
       
-        const id_class = request.params.id_class;
+        
         const id_textbook = request.params.id_textbook;
         try {
-            const result = await this.sessionService.getAllSessions(Number(id_class),Number(id_textbook));
+            const result = await this.sessionService.getAllSessions(Number(id_textbook));
             response.status(200).send(result);
         } catch (error) {
             next(error);
@@ -68,14 +68,14 @@ export class SessionController{
 
 
     public createSession = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
-        const id_class = request.params.id_class;
+        
         const id_subject = request.params.id_subject;
         const id_textbook = request.params.id_textbook;
         const SessionData:CreateSessionDto =request.body;
 
         try {
             
-            const created= await this.sessionService.createSession(Number(id_class),Number(id_textbook),Number(id_subject),SessionData);
+            const created= await this.sessionService.createSession(Number(id_textbook),Number(id_subject),SessionData);
             response.status(201).send(created);
         } catch (error) {
 
@@ -86,11 +86,11 @@ export class SessionController{
 
     public getSessionById = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
-        const id_class = request.params.id_class;
+        
         const id_textbook = request.params.id_textbook;
         const id_session = request.params.id_session;
         try {
-            const session = await this.sessionService.getSessionById(Number(id_class),Number(id_textbook),Number(id_session));
+            const session = await this.sessionService.getSessionById(Number(id_textbook),Number(id_session));
             response.status(200).send(session);
         } catch (error) {
             next(error);
@@ -100,13 +100,13 @@ export class SessionController{
 
     public updateSession = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
     
-        const id_class = request.params.id_class;
+        
         const id_textbook = request.params.id_textbook;
         const id_session = request.params.id_session;
         const SessionData:CreateSessionDto = request.body;
 
         try {
-           const result = await this.sessionService.updateSession(Number(id_class),Number(id_textbook),Number(id_session),SessionData);
+           const result = await this.sessionService.updateSession(Number(id_textbook),Number(id_session),SessionData);
            response.status(200).send(result);        
         } catch (error) {
             next(error);
@@ -116,12 +116,12 @@ export class SessionController{
 
     public deleteSession = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
 
-        const id_class = request.params.id_class;
+        
         const id_textbook = request.params.id_textbook;
         const id_session = request.params.id_session;
 
         try {
-            const result = await this.sessionService.deleteSession(Number(id_class),Number(id_textbook),Number(id_session)) ;
+            const result = await this.sessionService.deleteSession(Number(id_textbook),Number(id_session)) ;
             response.status(200).send(`Session with id ${id_session} has been deleted`);
             
         } catch (error) {

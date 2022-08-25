@@ -43,11 +43,9 @@ export class TaskController{
 
     public getAllTasks = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
       
-        const id_class = request.params.id_class;
-        const id_textbook = request.params.id_textbook;
         const id_session = request.params.id_session;
         try {
-            const result = await this.taskService.getAllTasksInSession(Number(id_class),Number(id_textbook),Number(id_session));
+            const result = await this.taskService.getAllTasksInSession(Number(id_session));
             response.status(200).send(result);
         } catch (error) {
             next(error);
@@ -56,14 +54,12 @@ export class TaskController{
 
 
     public createTask = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
-        const id_class = request.params.id_class;
-        const id_textbook = request.params.id_textbook;
         const id_session = request.params.id_session;
         const TextbookData:CreateTaskDto =request.body;
 
         try {
             
-            const created= await this.taskService.createTask(Number(id_class),Number(id_textbook),Number(id_session),TextbookData);
+            const created= await this.taskService.createTask(Number(id_session),TextbookData);
             response.status(201).send(created);
         } catch (error) {
 
@@ -74,12 +70,10 @@ export class TaskController{
 
     public getTaskById = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
-        const id_class = request.params.id_class;
-        const id_textbook = request.params.id_textbook;
         const id_session = request.params.id_session;
         const id_task = request.params.id_task;
         try {
-            const task = await this.taskService.getTaskById(Number(id_class),Number(id_textbook),Number(id_session),Number(id_task));
+            const task = await this.taskService.getTaskById(Number(id_session),Number(id_task));
             response.status(200).send(task);
         } catch (error) {
             next(error);
@@ -89,14 +83,12 @@ export class TaskController{
 
     public updateTask = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
     
-        const id_class = request.params.id_class;
-        const id_textbook = request.params.id_textbook;
         const id_session = request.params.id_session;
         const id_task = request.params.id_task;
         const TextbookData:CreateTaskDto = request.body;
 
         try {
-           const result = await this.taskService.updateTask(Number(id_class),Number(id_textbook),Number(id_session),Number(id_task),TextbookData);
+           const result = await this.taskService.updateTask(Number(id_session),Number(id_task),TextbookData);
            response.status(200).send(result);        
         } catch (error) {
             next(error);
@@ -106,12 +98,10 @@ export class TaskController{
 
     public deleteTask = async(request: express.Request, response: express.Response, next: express.NextFunction)=>{
 
-        const id_class = request.params.id_class;
-        const id_textbook = request.params.id_textbook;
         const id_session = request.params.id_session;
         const id_task = request.params.id_task;
         try {
-            const result = await this.taskService.deleteTask(Number(id_class),Number(id_textbook),Number(id_session),Number(id_task)) ;
+            const result = await this.taskService.deleteTask(Number(id_session),Number(id_task)) ;
             response.status(200).send(`Task with id ${id_task} has been deleted`)
             
         } catch (error) {

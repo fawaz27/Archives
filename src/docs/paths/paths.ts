@@ -161,15 +161,9 @@ const paths = {
         "delete":deleteTextbook
 
     },
-    "/classes/{id_class}/textbooks/{id_textbook}/subjects/{id_subject}/sessions":{
+    "/textbooks/{id_textbook}/subjects/{id_subject}/sessions":{
         "parameters": [
-            {
-              "name": "id_class",
-              "in": "path",
-              "required": true,
-              "description": "ID of class ",
-              "type": "integer"
-            },
+            
             {
                 "name": "id_textbook",
                 "in": "path",
@@ -190,15 +184,8 @@ const paths = {
         
 
     },
-    "/classes/{id_class}/textbooks/{id_textbook}/sessions":{
+    "/textbooks/{id_textbook}/sessions":{
         "parameters": [
-            {
-              "name": "id_class",
-              "in": "path",
-              "required": true,
-              "description": "ID of class ",
-              "type": "integer"
-            },
             {
                 "name": "id_textbook",
                 "in": "path",
@@ -210,15 +197,8 @@ const paths = {
         "get":getSessions
 
     },
-    "/classes/{id_class}/textbooks/{id_textbook}/sessions/{id_session}":{
+    "/textbooks/{id_textbook}/sessions/{id_session}":{
         "parameters": [
-            {
-              "name": "id_class",
-              "in": "path",
-              "required": true,
-              "description": "ID of class ",
-              "type": "integer"
-            },
             {
                 "name": "id_textbook",
                 "in": "path",
@@ -238,22 +218,8 @@ const paths = {
         "put":putSession,
         "delete":deleteSession
     },
-    "/classes/{id_class}/textbooks/{id_textbook}/sessions/{id_session}/tasks":{
+    "/sessions/{id_session}/tasks":{
         "parameters": [
-            {
-              "name": "id_class",
-              "in": "path",
-              "required": true,
-              "description": "ID of class ",
-              "type": "integer"
-            },
-            {
-                "name": "id_textbook",
-                "in": "path",
-                "required": true,
-                "description": "ID of textbook ",
-                "type": "integer"
-            },
             {
                 "name": "id_session",
                 "in": "path",
@@ -266,22 +232,8 @@ const paths = {
         "post":postTask
 
     },
-    "/classes/{id_class}/textbooks/{id_textbook}/sessions/{id_session}/tasks/{id_task}":{
+    "/sessions/{id_session}/tasks/{id_task}":{
         "parameters": [
-            {
-              "name": "id_class",
-              "in": "path",
-              "required": true,
-              "description": "ID of class ",
-              "type": "integer"
-            },
-            {
-                "name": "id_textbook",
-                "in": "path",
-                "required": true,
-                "description": "ID of textbook ",
-                "type": "integer"
-            },
             {
                 "name": "id_session",
                 "in": "path",
@@ -322,28 +274,12 @@ const paths = {
         "delete":deleteTeacher
         
     },
-    "/teachers/{id}/subjects":{
-        "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "required": true,
-              "description": "ID of teacher that we want to find subjects",
-              "type": "integer"
-            }
-        ],
+    "/mysubjects":{
         "get":getTeacherSubjects
         
     },
-    "/teachers/{id}/subjects/{id_subject}/sessions":{
+    "/mysubjects/{id_subject}/sessions":{
         "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "required": true,
-              "description": "ID of teacher that we want to find sessions",
-              "type": "integer"
-            },
             {
                 "name": "id_subject",
                 "in": "path",
@@ -357,16 +293,9 @@ const paths = {
         
         
     },
-    "/teachers/{id}/subjects/{id_subject}/sessions/{id_session}":{
+    "/mysubjects/{id_subject}/sessions/{id_session}":{
 
         "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "required": true,
-              "description": "ID of teacher ",
-              "type": "integer"
-            },
             {
                 "name": "id_subject",
                 "in": "path",

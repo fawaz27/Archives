@@ -1,7 +1,7 @@
 
 const getTeacherSubjects ={
     "tags":["Teachers"],
-    "summary":"Get all subjects for teacher with given ID",
+    "summary":"Get all subjects for teacher connected",
     "parameters":[],
     "responses":{
         "200":{

@@ -19,6 +19,10 @@ import NoSessionFoundForSubjectInClassForYearException from '../exceptions/sessi
 import CreateSessionDto from '../dto/session.dto';
 import SessionWithThatIDNotExistsInTextbookException from '../exceptions/session/SessionWithThatIDNotExistsInTextbookException';
 import TeacherWithIdHasNoSubjectsWithIDException from '../exceptions/teacher/TeacherWithIdHasNoSubjectsWithIDException';
+import validate_year_academic from '../utils/validator-year_academic';
+import FormatYearException from '../exceptions/year/FormatYearException';
+import CreateSessionYearDto from '../dto/sessionyear.dto';
+import YearIsStringException from '../exceptions/year/YearIsStringException';
 
 export class TeacherService{
 
@@ -180,7 +184,7 @@ export class TeacherService{
     }
 
 
-    public async getSessionsTeacher(id:number,id_subject:number,year_academic:string){
+    public async getSessionsTeacher(id:number,id_subject:number,year_academic:any){
 
         const user = await this.teacherRepository.findOneBy({id:id});
         
@@ -195,22 +199,34 @@ export class TeacherService{
                 .where("teacher.id = :id_teacher",{id_teacher:id})
                 .andWhere("subject.id = :id_subject",{id_subject:id_subject})
                 .getOne();
+                console.log(subject);
+                
 
             if (subject) {
 
-                
+                // if(year_academic==undefined){
+                //     let year_now = (new Date()).getFullYear();
+                //     year_academic=year_now-1+'-'+year_now;
+                // }
+
+                if (typeof(year_academic)!="string") {
+                    throw new YearIsStringException()
+                }                
+                else if(!validate_year_academic(year_academic)){
+                    throw  new FormatYearException();
+                }              
 
                 const year = await this.yearRepository.findOne({  where:{year:`${year_academic}`}});
 
                 if (year) {
 
                     const textbook = await this.textbookRepository
-                    .createQueryBuilder("textbook")
-                    .leftJoinAndSelect("textbook.classe","class")
-                    .leftJoinAndSelect("textbook.year_academic","year")
-                    .where("year.year = :year_academic",{year_academic:year_academic})
-                    .andWhere("class.id = :id_class",{id_class:subject.classe.id})
-                    .getOne();
+                        .createQueryBuilder("textbook")
+                        .leftJoinAndSelect("textbook.classe","class")
+                        .leftJoinAndSelect("textbook.year_academic","year")
+                        .where("year.year = :year_academic",{year_academic:year_academic})
+                        .andWhere("class.id = :id_class",{id_class:subject.classe.id})
+                        .getOne();
 
                     if (textbook) {
 
@@ -251,7 +267,7 @@ export class TeacherService{
     }
 
 
-    public async addSession(id:number,id_subject:number,year_academic:string,session:CreateSessionDto){
+    public async addSession(id:number,id_subject:number,year_academic:string,session:CreateSessionYearDto){
 
         const user = await this.teacherRepository.findOneBy({id:id});
         
@@ -268,10 +284,11 @@ export class TeacherService{
                 .getOne();
 
             if (subject) {
-
-                if(year_academic==undefined){
-                    let year_now = (new Date()).getFullYear();
-                    year_academic=year_now-1+'-'+year_now;
+                
+                
+                
+                if(!validate_year_academic(year_academic)){
+                    throw new FormatYearException();
                 }
 
                 const year = await this.yearRepository.findOne({  where:{year:`${year_academic}`}});
@@ -349,9 +366,8 @@ export class TeacherService{
 
             if (subject) {
 
-                if(year_academic==undefined){
-                    let year_now = (new Date()).getFullYear();
-                    year_academic=year_now-1+'-'+year_now;
+                if(!validate_year_academic(year_academic)){
+                    throw new FormatYearException();
                 }
 
                 const year = await this.yearRepository.findOne({  where:{year:`${year_academic}`}});
@@ -422,7 +438,7 @@ export class TeacherService{
     }
 
 
-    public async deleteSession(id:number,id_subject:number,year_academic:string,id_session:number){
+    public async deleteSession(id:number,id_subject:number,year_academic:any,id_session:number){
 
         const user = await this.teacherRepository.findOneBy({id:id});
         
@@ -440,9 +456,11 @@ export class TeacherService{
 
             if (subject) {
 
-                if(year_academic==undefined){
-                    let year_now = (new Date()).getFullYear();
-                    year_academic=year_now-1+'-'+year_now;
+                if (typeof(year_academic)!="string") {
+                    throw new YearIsStringException()
+                } 
+                else if(!validate_year_academic(year_academic)){
+                    throw new FormatYearException();
                 }
 
                 const year = await this.yearRepository.findOne({  where:{year:`${year_academic}`}});

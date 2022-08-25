@@ -22,14 +22,14 @@ export class YearController{
     private initializeRoutes()
     {
         this.router
-            // .all(`${this.path}`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
-            // .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
+            .all(`${this.path}`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
+            .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .get(this.path,this.getAllYears)
             .post(this.path,validationMiddleware(CreateYearDto),this.createYear);
 
         this.router
-            // .all(`${this.path}/*`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
-            // .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
+            .all(`${this.path}/*`,authMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
+            .all(`${this.path}`,isAdminMiddleware as unknown as (req:Request,res:Response,net:NextFunction)=>{})
             .get(`${this.path}/:id_year`,this.getYearById)
             .put(`${this.path}/:id_year`,validationMiddleware(CreateYearDto),this.updateYear)
             .delete(`${this.path}/:id_year`,this.deleteYear)

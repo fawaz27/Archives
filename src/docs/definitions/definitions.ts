@@ -2,6 +2,7 @@ import logindefinitions from "./Auth/Login.definitions";
 import classdefinitions from "./Classes/Class.definitions";
 import createClassDtodefinitions from "./Classes/CreateClassDto.definitions";
 import createSessionDtodefinitions from "./Session/CreateSessionDto.definitions";
+import createSessionYearDtodefinitions from "./Session/CreateSessionYearDto.definitions";
 import sessiondefinitions from "./Session/session.definition";
 import createSubjectDtodefinitions from "./Subject/CreateSubjectDto.definitions";
 import subjectdefinitions from "./Subject/subject.definitions";
@@ -19,6 +20,7 @@ const definitions ={
     "CreateClassDto":createClassDtodefinitions,
     "Session":sessiondefinitions,
     "CreateSessionDto":createSessionDtodefinitions,
+    "CreateSessionYearDto":createSessionYearDtodefinitions,
     "Task":taskdefinitions,
     "CreateTaskDto":createTaskDtodefinitions,
     "Year_Academic":yeardefinitions,

@@ -4,11 +4,10 @@ import { Textbook } from '../models/textbook.entity';
 import { Class } from '../models/class.entity';
 import { Task } from '../models/task.entity';
 import CreateTaskDto from '../dto/task.dto';
-import ClassWithThatIDNotExistsException from '../exceptions/class/ClassWithThatIDNotExistsException';
 import InternalErrorException from '../exceptions/InternalErrorException';
 import NoTaskFoundInSessionException from '../exceptions/task/NoTaskFoundInSessionException';
-import TextbookWithThatIDNotExistsInClassException from '../exceptions/textbook/TextbookWithThatIDNotExistsInClassException';
-import SessionWithThatIDNotExistsInTextbookException from '../exceptions/session/SessionWithThatIDNotExistsInTextbookException';
+import SessionWithThatIDNotExistsException from '../exceptions/session/SessionWithThatIDNotExistsException';
+import TaskWithThatIDNotExistsInSessionException from '../exceptions/task/TaskWithThatIDNotExistsInSessionException';
 
 
 export class TaskService{
@@ -27,162 +26,98 @@ export class TaskService{
        
     }
 
-    public async getAllTasksInSession(id_class:number,id_textbook:number,id_session:number){
+    public async getAllTasksInSession(id_session:number){
 
-        const classe = await this.classRepository.findOneBy({id:id_class}); 
+    
 
-        if (classe) {
+        const session = await  this.sessionRepository
+            .createQueryBuilder("session")
+            .leftJoinAndSelect("session.textbook","textbook")
+            .where("session.id = :id_session",{id_session:id_session})
+            .getOne();
+
+        if (session) {
+        
+            const tasks = await this.taskRepository
+                    .createQueryBuilder("task")
+                    .leftJoinAndSelect("task.session","session")
+                    .where("session.id = :id_session",{id_session:session.id})
+                    .getMany();
+
+            if (tasks && tasks.length!=0) {
+                return tasks;
             
-            const textbook = await this.textbookRepository
-                .createQueryBuilder("textbook")
-                .leftJoinAndSelect("textbook.classe","class")
-                .where("textbook.id = :id_textbook",{id_textbook:id_textbook})
-                .andWhere("class.id = :id_class",{id_class:classe.id})
-                .getOne();
-
-            if (textbook) {
-
-                const session = await  this.sessionRepository
-                    .createQueryBuilder("session")
-                    .leftJoinAndSelect("session.textbook","textbook")
-                    .where("session.id = :id_session",{id_session:id_session})
-                    .andWhere("textbook.id = :id_textbook",{id_textbook:textbook.id})
-                    .getOne();
-
-                if (session) {
-                
-                    const tasks = await this.taskRepository
-                            .createQueryBuilder("task")
-                            .leftJoinAndSelect("task.session","session")
-                            .where("session.id = :id_session",{id_session:session.id})
-                            .getMany();
-
-                    if (tasks && tasks.length!=0) {
-                        return tasks;
-                    
-                    } 
-                    else {
-                         throw new NoTaskFoundInSessionException(session.id);
-                    }
-                        
-
-                } 
-                else {
-                    throw new SessionWithThatIDNotExistsInTextbookException(id_session,textbook.title);  
-                }
-
             } 
             else {
-                
-                throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
+                    throw new NoTaskFoundInSessionException(session.id);
             }
+                
 
         } 
         else {
-
-            throw new ClassWithThatIDNotExistsException(id_class);
-
-        }    
+            throw new SessionWithThatIDNotExistsException(id_session);  
+        }   
 
 
     }
 
-    public async createTask(id_class:number,id_textbook:number,id_session:number,task:CreateTaskDto){
+    public async createTask(id_session:number,task:CreateTaskDto){
 
-        const classe = await this.classRepository.findOneBy({id:id_class}); 
+       
 
-        if (classe) {
+        const session = await  this.sessionRepository
+            .createQueryBuilder("session")
+            .leftJoinAndSelect("session.textbook","textbook")
+            .where("session.id = :id_session",{id_session:id_session})
+            .getOne();
+
+        if (session) {
             
-            const textbook = await this.textbookRepository
-                .createQueryBuilder("textbook")
-                .leftJoinAndSelect("textbook.classe","class")
-                .where("textbook.id = :id_textbook",{id_textbook:id_textbook})
-                .andWhere("class.id = :id_class",{id_class:classe.id})
-                .getOne();
+            const newTask =new Task();
+            newTask.name=task.name;
+            newTask.title=task.title;
+            newTask.type=task.type;
+            newTask.createdAt=task.createdAt;
+            newTask.date_given=task.date_given;
+            newTask.date_submission=task.date_submission;
+            newTask.statement=task.statement;
+            newTask.document_annex=task.document_annex;
 
-            if (textbook) {
+            newTask.session=session;
 
-                const session = await  this.sessionRepository
-                    .createQueryBuilder("session")
-                    .leftJoinAndSelect("session.textbook","textbook")
-                    .where("session.id = :id_session",{id_session:id_session})
-                    .andWhere("textbook.id = :id_textbook",{id_textbook:textbook.id})
-                    .getOne();
+            const created = await this.taskRepository.save(newTask);
 
-                if (session) {
-                    
-                    const newTask =new Task();
-                    newTask.name=task.name;
-                    newTask.title=task.title;
-                    newTask.type=task.type;
-                    newTask.createdAt=task.createdAt;
-                    newTask.date_given=task.date_given;
-                    newTask.date_submission=task.date_submission;
-                    newTask.statement=task.statement;
-                    newTask.document_annex=task.document_annex;
-
-                    newTask.session=session;
-
-                    const created = await this.taskRepository.save(newTask);
-
-                    if (created) {
-                        return created;
-                    } 
-                    else {
-                        throw new InternalErrorException();
-                    }
-
-
-                            
-
-                } 
-                else {
-                    throw new SessionWithThatIDNotExistsInTextbookException(id_session,textbook.title);  
-                }
-
+            if (created) {
+                return created;
             } 
             else {
-                
-                throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
+                throw new InternalErrorException();
             }
-
         } 
         else {
+            throw new SessionWithThatIDNotExistsException(id_session);  
+        }
 
-            throw new ClassWithThatIDNotExistsException(id_class);
-
-        } 
+    
+           
 
     }
 
 
 
-    public async getTaskById(id_class:number,id_textbook:number,id_session:number,id_task:number){
+    public async getTaskById(id_session:number,id_task:number){
         
 
-        const classe = await this.classRepository.findOneBy({id:id_class}); 
-
-        if (classe) {
-            
-            const textbook = await this.textbookRepository
-                .createQueryBuilder("textbook")
-                .leftJoinAndSelect("textbook.classe","class")
-                .where("textbook.id = :id_textbook",{id_textbook:id_textbook})
-                .andWhere("class.id = :id_class",{id_class:classe.id})
-                .getOne();
-
-            if (textbook) {
+        
 
                 const session = await  this.sessionRepository
                     .createQueryBuilder("session")
                     .leftJoinAndSelect("session.textbook","textbook")
                     .where("session.id = :id_session",{id_session:id_session})
-                    .andWhere("textbook.id = :id_textbook",{id_textbook:textbook.id})
                     .getOne();
 
 
                 if (session) {
-
 
                     const task = await this.taskRepository
                             .createQueryBuilder("task")
@@ -191,58 +126,34 @@ export class TaskService{
                             .where("session.id = :id_session",{id_session:session.id})
                             .getOne();
 
-
                     if (task) {
                         return task;
                     } 
                     else {
-                        
+                        throw new TaskWithThatIDNotExistsInSessionException(id_task,id_session);
                     }
 
                 } 
                 else {
-                    throw new SessionWithThatIDNotExistsInTextbookException(id_session,textbook.title);  
+                    throw new SessionWithThatIDNotExistsException(id_session);  
                 }
 
-            } 
-            else {
-                
-                throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
-            }
-
-        } 
-        else {
-
-            throw new ClassWithThatIDNotExistsException(id_class);
-
-        } 
-
+            
+            
         
 
     }
 
 
-    public async updateTask(id_class:number,id_textbook:number,id_session:number,id_task:number,task:CreateTaskDto){
+    public async updateTask(id_session:number,id_task:number,task:CreateTaskDto){
         
 
-        const classe = await this.classRepository.findOneBy({id:id_class}); 
-
-        if (classe) {
-            
-            const textbook = await this.textbookRepository
-                .createQueryBuilder("textbook")
-                .leftJoinAndSelect("textbook.classe","class")
-                .where("textbook.id = :id_textbook",{id_textbook:id_textbook})
-                .andWhere("class.id = :id_class",{id_class:classe.id})
-                .getOne();
-
-            if (textbook) {
+        
 
                 const session = await  this.sessionRepository
                     .createQueryBuilder("session")
                     .leftJoinAndSelect("session.textbook","textbook")
                     .where("session.id = :id_session",{id_session:id_session})
-                    .andWhere("textbook.id = :id_textbook",{id_textbook:textbook.id})
                     .getOne();
 
                 if (session) {
@@ -278,52 +189,30 @@ export class TaskService{
                         
                     } 
                     else {
-                        
+                        throw new TaskWithThatIDNotExistsInSessionException(id_task,id_session)
                     }
 
                 } 
                 else {
-                    throw new SessionWithThatIDNotExistsInTextbookException(id_session,textbook.title);  
+                    throw new SessionWithThatIDNotExistsException(id_session);  
                 }
 
-            } 
-            else {
-                
-                throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
-            }
-
-        } 
-        else {
-
-            throw new ClassWithThatIDNotExistsException(id_class);
-
-        } 
+            
+        
 
         
 
     }
 
-    public async deleteTask(id_class:number,id_textbook:number,id_session:number,id_task:number){
+    public async deleteTask(id_session:number,id_task:number){
         
 
-        const classe = await this.classRepository.findOneBy({id:id_class}); 
-
-        if (classe) {
-            
-            const textbook = await this.textbookRepository
-                .createQueryBuilder("textbook")
-                .leftJoinAndSelect("textbook.classe","class")
-                .where("textbook.id = :id_textbook",{id_textbook:id_textbook})
-                .andWhere("class.id = :id_class",{id_class:classe.id})
-                .getOne();
-
-            if (textbook) {
+    
 
                 const session = await  this.sessionRepository
                     .createQueryBuilder("session")
                     .leftJoinAndSelect("session.textbook","textbook")
                     .where("session.id = :id_session",{id_session:id_session})
-                    .andWhere("textbook.id = :id_textbook",{id_textbook:textbook.id})
                     .getOne();
 
 
@@ -348,23 +237,13 @@ export class TaskService{
 
                 } 
                 else {
-                    throw new SessionWithThatIDNotExistsInTextbookException(id_session,textbook.title);  
+                    throw new SessionWithThatIDNotExistsException(id_session);  
                 }
 
             } 
-            else {
-                
-                throw new TextbookWithThatIDNotExistsInClassException(id_textbook,classe.name);
-            }
+            
 
-        } 
-        else {
-
-            throw new ClassWithThatIDNotExistsException(id_class);
-
-        } 
-
-    }
+    
    
 
 }
