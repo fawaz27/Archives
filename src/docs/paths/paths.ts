@@ -37,6 +37,11 @@ import getTextbook from "./Textbooks/get_textbook";
 import getTextbooks from "./Textbooks/get_textbooks";
 import postTextbook from "./Textbooks/post_textbook";
 import putTextbook from "./Textbooks/put_textbook";
+import deleteWorking from "./Working/delete_working";
+import getWorking from "./Working/get_working";
+import getWorkings from "./Working/get_workings";
+import postWorking from "./Working/post_working";
+import putWorking from "./Working/put_working";
 import deleteYear from "./Year/delete_year";
 import getYear from "./Year/get_year";
 import getYears from "./Year/get_years";
@@ -125,6 +130,46 @@ const paths = {
         "delete":deleteSubject
         
     },
+    
+    "/classes/{id_class}/workings":{
+        "parameters": [
+            {
+              "name": "id_class",
+              "in": "path",
+              "required": true,
+              "description": "ID of class that we want to find working time",
+              "type": "integer"
+            }
+        ],
+        "get":getWorkings,
+        "post":postWorking
+
+    },
+    "/classes/{id_class}/workings/{id_working}":{
+        "parameters": [
+            {
+              "name": "id_class",
+              "in": "path",
+              "required": true,
+              "description": "ID of class that we want to find working time",
+              "type": "integer"
+            },
+            {
+                "name": "id_working",
+                "in": "path",
+                "required": true,
+                "description": "ID of working time that we want to find working time",
+                "type": "integer"
+            }
+        ],
+        "get":getWorking,
+        "put":putWorking,
+        "delete":deleteWorking
+        
+    },
+
+
+
     "/classes/{id_class}/textbooks":{
         "parameters": [
             {

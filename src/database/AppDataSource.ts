@@ -8,6 +8,7 @@ import { Teacher } from '../models/teacher.entity'
 import { Subject } from '../models/subject.entity';
 import { Session } from '../models/session.entity';
 import { Task } from '../models/task.entity';
+import { Working_time } from "../models/working_time.entity";
 
 export const AppDataSource = new DataSource({
     type: 'postgres',
@@ -23,7 +24,8 @@ export const AppDataSource = new DataSource({
      Class,
      Textbook,
      Task,
-     Year_Academic
+     Year_Academic,
+     Working_time
     ],
     synchronize: true,
 });

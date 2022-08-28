@@ -10,6 +10,7 @@ import { TextbookController } from './controllers/textbook.controller';
 import { YearController } from './controllers/year.controller';
 import { SessionController } from './controllers/session.controller';
 import { TaskController } from './controllers/task.controller';
+import { WorkingController } from './controllers/working.controller';
 
 (async () => {
 
@@ -31,7 +32,8 @@ import { TaskController } from './controllers/task.controller';
       new TextbookController(),
       new YearController(),
       new SessionController(),
-      new TaskController()
+      new TaskController(),
+      new WorkingController()
     ]);
     
     

@@ -1,7 +1,8 @@
-import { Column ,Entity, PrimaryGeneratedColumn, ManyToOne, OneToMany,OneToOne,JoinColumn,ManyToMany} from 'typeorm'
+import { Column ,Entity, PrimaryGeneratedColumn, OneToMany,ManyToMany, OneToOne} from 'typeorm'
 import { Textbook } from './textbook.entity';
 import { Subject } from './subject.entity';
 import { Teacher } from './teacher.entity';
+import { Working_time } from './working_time.entity';
 @Entity()
 export class Class{
     @PrimaryGeneratedColumn()
@@ -18,6 +19,9 @@ export class Class{
 
     @ManyToMany(()=>Teacher, teacher => teacher.classes)
     teachers:Teacher[]
+
+    @OneToOne(()=>Working_time, (working)=>working.classe)
+    working:Working_time
 
 
 }

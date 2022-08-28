@@ -5,6 +5,7 @@ import Subjectstags from "./Subjects/subjects.tags";
 import Taskstags from "./Tasks/tasks.tags";
 import Teacherstags from "./Teachers/teachers.tags";
 import textbookstags from "./Textbooks/textbooks.tags";
+import Workingstags from "./Working/working.tags";
 import yeartags from "./Year_Academic/year.tags";
 
 const tags=[
@@ -15,7 +16,8 @@ const tags=[
     Subjectstags,
     Teacherstags,
     Sessionstags,
-    Taskstags
+    Taskstags,
+    Workingstags
    
 ]
 

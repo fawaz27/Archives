@@ -1,6 +1,6 @@
 import { Column ,Entity, PrimaryGeneratedColumn,OneToMany  } from 'typeorm'
-import { Class } from './class.entity';
 import { Textbook } from './textbook.entity';
+import { Working_time } from './working_time.entity';
 
 @Entity()
 export class Year_Academic{
@@ -12,4 +12,7 @@ export class Year_Academic{
 
     @OneToMany( ()=> Textbook, (textbook: Textbook) => textbook.year_academic)
     textbooks: Textbook[];
+
+    @OneToMany( ()=> Working_time, (Working_time: Working_time) => Working_time.year)
+    workings: Working_time[];
 }
